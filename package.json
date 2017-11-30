@@ -1,0 +1,32 @@
+{
+  "name": "@uon/core",
+  "version": "0.1.0",
+  "description": "A library for building server and web applications",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "tsc -p ./ --outDir dist/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/reflect-metadata": "0.0.5",
+    "reflect-metadata": "^0.1.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uon-team/core.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Gabriel Roy",
+    "email": "gab@uon.io",
+    "url": "https://uon.io"
+  },
+  "keywords": [
+    "architecture",
+    "application",
+    "uon",
+    "decorators",
+    "typescript"
+  ]
+}
