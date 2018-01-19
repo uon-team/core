@@ -1,61 +1,67 @@
 
 
 import { Type } from './Type';
+import { Provider } from './Provider';
+import { Injector } from './Injector';
+import { CreateMetadataCtor, GetOrDefineMetadata, META_ANNOTATIONS } from './Metadata';
 
 
-/**
- * Module definition options
- */
-export interface ModuleOptions {
+export class ModuleRef<T> {
 
-    // An optional name for the module
-    name?: string
+    module: Module;
+    instance: T;
+    injector: Injector;
+}
 
-    // Modules dependencies
-    imports?: Type<any>[],
 
-    // Other modules to expose
-    exports?: Function[],
-
-    // A list of providers
-    providers?: any[]
-
+export interface ModuleWithProviders {
+    module: Type<any>;
+    providers: Provider[];
 }
 
 
 /**
- * A modules metadata
+ * The modules interface
  */
-export interface ModuleMetadata {
+export interface Module {
 
     // An opaque id for the module
     id?: string;
 
-    // The module's class
-    type?: Type<any>;
-
     // Modules dependencies
-    imports?: Type<any>[];
+    imports?: Array<Type<any> | ModuleWithProviders>;
 
-    // Other modules to expose
-    exports?: Function[];
+    // Application level providers
+    providers?: Provider[];
 
-
-    deps?: Type<any>[]
+    // List of types to export with the module
+    declarations?: Type<any>[];
 
 }
-
 
 
 /**
  * Defines a module with it's dependencies
  * @param options 
  */
-export function Module(options?: ModuleOptions): any {
+export function Module(meta: Module): any {
+
+    const meta_ctor = CreateMetadataCtor((meta: Module) => meta);
+    if (this instanceof Module) {
+        meta_ctor.apply(this, arguments);
+        return this;
+    }
 
 
     return function ModuleDecorator<T>(target: Type<T>) {
 
+        let annotations = GetOrDefineMetadata(META_ANNOTATIONS, target, []);
+
+        // create the metadata with either a privided token or the class type
+        let meta_instance = new (<any>Module)(meta);
+
+        // push the metadata
+        annotations.push(meta_instance);
 
         return target;
     }

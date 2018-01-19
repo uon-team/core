@@ -7,10 +7,11 @@
   "scripts": {
     "prepublishOnly": "tsc -p ./ --outDir dist/"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/reflect-metadata": "0.0.5",
+  "dependencies": {
     "reflect-metadata": "^0.1.10"
+  },
+  "devDependencies": {
+    "@types/reflect-metadata": "0.0.5"
   },
   "repository": {
     "type": "git",
