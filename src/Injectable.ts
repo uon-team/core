@@ -74,7 +74,7 @@ export interface Inject {
 }
 
 /**
- * Mark a member or parameter to inject a value
+ * Mark a ctor parameter to inject a value
  * @param token 
  */
 export function Inject(token?: any) {
@@ -85,44 +85,28 @@ export function Inject(token?: any) {
         return this;
     }
 
-    return function InjectDecorator(target: any, key: string, index?: number) {
+    return function InjectDecorator(target: any, key: string, index: number) {
 
-        // get the member parameter type
-        let type: any;
-        let annotation_key: string;
-
-        if (index === undefined) {
-            // no index provided, must be member
-            type = Reflect.getMetadata('design:type', target, key);
-            annotation_key = META_PROPERTIES;
-        }
-        else {
-            // we got an index, get param types
-            type = Reflect.getMetadata('design:paramtypes', target)[index];
-            annotation_key = META_PARAMETERS;
-        }
+        // get the parameter type
+        const type = Reflect.getMetadata('design:paramtypes', target)[index];
 
         // create a metadata object, if a token was provided, use that instead of the reflected type
         let meta_instance = new (<any>Inject)(token || type);
 
         // grab the metadata from the target
-        let annotations: any = GetOrDefineMetadata(annotation_key, target, index === undefined ? {} : []);
+        let annotations: any = GetOrDefineMetadata(META_PARAMETERS, target, index === undefined ? {} : []);
 
-        // in the case of members, just push the metadata
-        if (index === undefined) {
 
-            annotations[key] = meta_instance;
+        // insert the annotation in its own array, 
+        // but first pad array with null values
+        while (annotations.length <= index) {
+            annotations.push(null);
         }
-        else {
-            // for ctor parameters, insert the annotation in its own array
-            while (annotations.length <= index) {
-                annotations.push(null);
-            }
 
-            annotations[index] = annotations[index] || [];
-            annotations[index].push(meta_instance)
+        annotations[index] = annotations[index] || [];
+        annotations[index].push(meta_instance)
 
-        }
+
     }
 }
 

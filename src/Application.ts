@@ -8,10 +8,9 @@ import { Injector } from './Injector';
 import { META_ANNOTATIONS, META_PARAMETERS, META_PROPERTIES } from './Metadata';
 import { InjectionToken } from './Injectable';
 import { Provider } from './Provider';
-import { Router, RouteHandler } from './Router';
 
 // the token to use for async initialization
-export const APP_INITIALIZERS = new InjectionToken<any>("Application async initializers");
+export const APP_INITIALIZER = new InjectionToken<any>("Application async initializers");
 
 /**
  * The application class is used to start all dependent 
@@ -25,7 +24,7 @@ export class Application {
     /// the loaded modules map
     private _modules: Map<Type<any>, ModuleRef<any>> = new Map();
 
-    /// the primary injector
+    /// the primary (root) injector
     private _injector: Injector;
 
 
@@ -40,23 +39,13 @@ export class Application {
         // the root provider list, start with the default providers
         let providers: any[] = [
             {
-                token: Router,
-                factory: () => {
-                    return Router.FromModuleRefs(this._modules);
-                }
-            },
-            {
-                token: APP_INITIALIZERS,
-                factory: (router: Router) => {
-                    return true;
-                },
-                deps: [Router],
-                multi: true
+                token: Application,
+                value: this
             }
         ];
 
         // append all the modules' providers
-        this.recursivelyGetModuleProviders(startup, providers);
+        Application.RecursivelyGetModuleProviders(startup, providers);
 
         // create the root injector
         this._injector = Injector.Create(providers);
@@ -66,6 +55,10 @@ export class Application {
 
     }
 
+    get modules() {
+        return this._modules;
+    }
+
     /**
      * Start the application
      */
@@ -73,7 +66,7 @@ export class Application {
 
         // get the initializer list
 
-        const initializers = this._injector.get(APP_INITIALIZERS, []);
+        const initializers = this._injector.get(APP_INITIALIZER, []);
         let promise_chain = Promise.resolve();
 
         // chain initializers if they return a promise
@@ -91,6 +84,15 @@ export class Application {
 
         // wait until it's all resolved and return true
         return promise_chain.then(() => {
+
+
+            // instaciate modules
+
+            for (let [mt, ref] of this._modules) {
+                // create the module instance
+                let instance = ref.injector.instanciate(mt);
+                ref.instance = instance;
+            }
 
             return true;
         });
@@ -119,12 +121,11 @@ export class Application {
 
                 if (!module_ref) {
 
-                    // create the module instance
-                    let instance = this._injector.instanciate(module_type);
+
 
                     const ref = <ModuleRef<any>>({
                         module: mod,
-                        instance: instance
+                        type: module_type
                     });
 
                     // create an injector for the module
@@ -132,6 +133,7 @@ export class Application {
 
                     // set the injector into module ref
                     ref.injector = injector;
+
 
                     // assign the module
                     this._modules.set(module_type, ref);
@@ -151,7 +153,7 @@ export class Application {
 
     }
 
-    private recursivelyGetModuleProviders(moduleType: Type<any> | ModuleWithProviders, out: any[]) {
+    static RecursivelyGetModuleProviders(moduleType: Type<any> | ModuleWithProviders, out: any[]) {
 
         let module: Module = null;
         let module_type: Type<any> = (moduleType as ModuleWithProviders).module || (moduleType as Type<any>);
@@ -166,20 +168,21 @@ export class Application {
                 let providers: Provider[] = [];
                 let imports = mod.imports;
 
-                // if module is a ModuleWithProviders, concat the providers to the list
-                if (extra_providers) {
-                    providers = providers.concat(extra_providers);
-                }
 
                 // if other providers were declared in the module metadata
                 if (mod.providers && mod.providers.length) {
                     providers = providers.concat(mod.providers);
                 }
 
+                // if module is a ModuleWithProviders, concat the providers to the list
+                if (extra_providers) {
+                    providers = providers.concat(extra_providers);
+                }
+
                 // go thru all imports
                 if (imports && imports.length) {
                     for (let j = 0; j < imports.length; ++j) {
-                        this.recursivelyGetModuleProviders(imports[j], out);
+                        this.RecursivelyGetModuleProviders(imports[j], out);
                     }
                 }
 
@@ -188,6 +191,51 @@ export class Application {
                     for (let j = 0; j < providers.length; ++j) {
                         if (out.indexOf(providers[j]) === -1) {
                             out.push(providers[j])
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+
+    static RecursivelyGetModuleDeclarations(moduleType: Type<any> | ModuleWithProviders, out: any[]) {
+
+        let module: Module = null;
+        let module_type: Type<any> = (moduleType as ModuleWithProviders).module || (moduleType as Type<any>);
+        //let extra_providers: Provider[] = (moduleType as ModuleWithProviders).providers;
+        let annotations: any[] = Reflect.getMetadata(META_ANNOTATIONS, module_type);
+
+        for (let i = 0; i < annotations.length; ++i) {
+            let a = annotations[i];
+            if (a instanceof Module) {
+
+                let mod = a as Module;
+                let declarations: Type<any>[] = [];
+                let imports = mod.imports;
+
+
+                // if other providers were declared in the module metadata
+                if (mod.declarations && mod.declarations.length) {
+                    declarations = declarations.concat(mod.declarations);
+                }
+
+
+                // go thru all imports
+                if (imports && imports.length) {
+                    for (let j = 0; j < imports.length; ++j) {
+                        this.RecursivelyGetModuleDeclarations(imports[j], out);
+                    }
+                }
+
+                // finally add own providers
+                if (declarations && declarations.length) {
+                    for (let j = 0; j < declarations.length; ++j) {
+                        if (out.indexOf(declarations[j]) === -1) {
+                            out.push(declarations[j])
                         }
                     }
                 }

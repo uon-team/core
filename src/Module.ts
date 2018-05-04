@@ -9,6 +9,7 @@ import { CreateMetadataCtor, GetOrDefineMetadata, META_ANNOTATIONS } from './Met
 export class ModuleRef<T> {
 
     module: Module;
+    type: Type<any>;
     instance: T;
     injector: Injector;
 }

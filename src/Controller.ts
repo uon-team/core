@@ -20,14 +20,16 @@ export interface Controller {
     // optional controller name
     name?: string;
 
-    // context level providers
-    providers?: Provider[];
-
     // the controller's parent controller
     parent?: Type<any>;
 
     // the base path for route handling
     path?: string;
+
+    // the order in which the controller's are executed
+    // lower numbers have priority, defaults to 1000
+    priority?: number;
+
 }
 
 
@@ -56,8 +58,14 @@ export function Controller<T extends Controller>(ctrl: T) {
         // get annotations array for this type
         let annotations = GetOrDefineMetadata(META_ANNOTATIONS, target, []);
 
+        // set default priority
+        if (ctrl.priority === undefined) {
+            ctrl.priority = 1000;
+        }
+
         // create the metadata with either a privided token or the class type
         let meta_instance = new (<any>Controller)(ctrl);
+
 
         // push the metadata
         annotations.push(meta_instance);

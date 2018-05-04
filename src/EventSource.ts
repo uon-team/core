@@ -36,7 +36,7 @@ export class EventSource {
     on(type: string, func: EventHandler, priority: number = 100): void {
 
         let list = this.__listeners[type];
-        if (list) {
+        if (!list) {
             list = this.__listeners[type] = [];
         }
 
