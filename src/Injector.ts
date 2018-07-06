@@ -455,7 +455,7 @@ export function GetInjectionTokens(type: Type<any>): DependencyRecord[] {
             if (annotations && annotations.length) {
                 for (let j = 0; j < annotations.length; ++j) {
                     if (annotations[j] instanceof Inject) {
-                        token = (annotations[j] as Inject).token;
+                        token = annotations[j].token;
                     }
                     else if (annotations[j] instanceof Optional) {
                         optional = true;

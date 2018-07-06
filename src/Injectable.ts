@@ -2,7 +2,7 @@
 
 import 'reflect-metadata';
 import { Type } from './Type';
-import { CreateMetadataCtor, GetOrDefineMetadata, META_ANNOTATIONS, META_PROPERTIES, META_PARAMETERS } from './Metadata';
+import { ParamDecorator, TypeDecorator, MakeParameterDecorator, MakeTypeDecorator, GetMetadata, META_ANNOTATIONS } from './Metadata';
 
 /**
  * Use InjectionToken as unique symbol
@@ -15,6 +15,10 @@ export class InjectionToken<T> {
 }
 
 
+export interface InjectableDecorator {
+    (): TypeDecorator;
+    new(): Injectable;
+}
 
 /**
  * The Injectable interface
@@ -24,34 +28,27 @@ export interface Injectable {
 }
 
 /**
- * Annotates a class as injectable
+ * Annotates a type as injectable
  */
-export function Injectable() {
+export const Injectable: InjectableDecorator =
+    MakeTypeDecorator(
+        'Injectable', // name
+        (token: any) => ({ token }), // properties
+        null, // parent
+        (cls: any, meta: any) => {
+            meta.token = GetMetadata('design:type', cls);
+        }
+    );
 
-    const meta_ctor = CreateMetadataCtor((token: any) => ({ token }));
-    if (this instanceof Injectable) {
-        meta_ctor.apply(this, arguments);
-        return this;
-    }
 
-    return function InjectableDecorator(target: any) {
 
-        let annotations = GetOrDefineMetadata(META_ANNOTATIONS, target, []);
-
-        // create the metadata with either a privided token or the class type
-        let meta_instance = new (<any>Injectable)(target);
-
-        // push the metadata
-        annotations.push(meta_instance);
-
-        return target;
-    }
-
-}
-
+/**
+ * Check if a type has injectable metadata
+ * @param type 
+ */
 export function IsInjectable(type: Type<any>) {
 
-    let annotations: any[] = Reflect.getMetadata(META_ANNOTATIONS, type);
+    let annotations: any[] = GetMetadata(META_ANNOTATIONS, type);
 
     if (annotations) {
         for (let i = 0; i < annotations.length; ++i) {
@@ -66,6 +63,12 @@ export function IsInjectable(type: Type<any>) {
 
 }
 
+
+export interface InjectDecorator {
+
+    (token: any): ParamDecorator;
+    new(token: any): Inject;
+}
 /**
  * The Inject interface
  */
@@ -74,70 +77,27 @@ export interface Inject {
 }
 
 /**
- * Mark a ctor parameter to inject a value
- * @param token 
+ * The Inject() parameter decorator
  */
-export function Inject(token?: any) {
-
-    const meta_ctor = CreateMetadataCtor((token: any) => ({ token }));
-    if (this instanceof Inject) {
-        meta_ctor.apply(this, arguments);
-        return this;
-    }
-
-    return function InjectDecorator(target: any, key: string, index: number) {
-
-        // get the parameter type
-        const type = Reflect.getMetadata('design:paramtypes', target)[index];
-
-        // create a metadata object, if a token was provided, use that instead of the reflected type
-        let meta_instance = new (<any>Inject)(token || type);
-
-        // grab the metadata from the target
-        let annotations: any = GetOrDefineMetadata(META_PARAMETERS, target, index === undefined ? {} : []);
-
-
-        // insert the annotation in its own array, 
-        // but first pad array with null values
-        while (annotations.length <= index) {
-            annotations.push(null);
+export const Inject: InjectDecorator =
+    MakeParameterDecorator(
+        'Inject',
+        (token: any) => ({ token }),
+        null,
+        (cls: any, meta: Inject, index: number) => {
+            if (!meta.token) {
+                meta.token = GetMetadata('design:paramtypes', cls)[index];
+            }
         }
-
-        annotations[index] = annotations[index] || [];
-        annotations[index].push(meta_instance)
+    );
 
 
-    }
+export interface OptionalDecorator {
+    (): ParamDecorator;
+    new(): any;
 }
 
-
-export function Optional() {
-
-    if (this instanceof Optional) {
-        return this;
-    }
-
-    return function OptionalDecorator(target: any, key: string, index: number) {
-
-
-        // we got an index, get param types
-        let type = Reflect.getMetadata('design:paramtypes', target)[index];
-        // create a metadata object, if a token was provided, use that instead of the reflected type
-        let meta_instance = new (<any>Optional)();
-
-        // grab the metadata from the target
-        let annotations: any = GetOrDefineMetadata(META_PARAMETERS, target, []);
-
-
-        // for ctor parameters, insert the annotation in its own array
-        while (annotations.length <= index) {
-            annotations.push(null);
-        }
-
-        annotations[index] = annotations[index] || [];
-        annotations[index].push(meta_instance)
-
-    }
-}
+export const Optional: OptionalDecorator =
+    MakeParameterDecorator('Optional');
 
 

@@ -150,7 +150,7 @@ export const StringUtils = {
 
 
 const PATH_DELIMITER = '/';
-const DEFAULT_DELIMITERS = './'
+const DEFAULT_DELIMITERS = '/'
 
 const PATH_REGEXP = new RegExp([
     // Match escaped characters that would otherwise appear in future matches.
@@ -350,5 +350,5 @@ function escapeString(str: string) {
  * @return {string}
  */
 function escapeGroup(group: string) {
-    return group.replace(/([=!:$/()])/g, '\\$1')
+    return group.replace(/([=!:$/()])/g, '\\$1');
 }

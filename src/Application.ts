@@ -3,7 +3,6 @@
 import 'reflect-metadata';
 import { Type } from './Type';
 import { Module, ModuleRef, ModuleWithProviders } from './Module';
-import { Controller } from './Controller';
 import { Injector } from './Injector';
 import { META_ANNOTATIONS, META_PARAMETERS, META_PROPERTIES } from './Metadata';
 import { InjectionToken } from './Injectable';
@@ -27,6 +26,9 @@ export class Application {
     /// the primary (root) injector
     private _injector: Injector;
 
+    // flattened declarations
+    private _declarations: any[] = [];
+
 
     /**
      * Creates a new application
@@ -47,6 +49,8 @@ export class Application {
         // append all the modules' providers
         Application.RecursivelyGetModuleProviders(startup, providers);
 
+        Application.RecursivelyGetModuleDeclarations(startup, this._declarations);
+
         // create the root injector
         this._injector = Injector.Create(providers);
 
@@ -55,8 +59,19 @@ export class Application {
 
     }
 
+    /**
+     * Get a map of all module refs loaded
+     */
     get modules() {
         return this._modules;
+    }
+
+    get mainModuleType() {
+        return this.mainModuleClass;
+    }
+
+    get declarations() {
+        return this._declarations;
     }
 
     /**
@@ -86,7 +101,7 @@ export class Application {
         return promise_chain.then(() => {
 
 
-            // instaciate modules
+            // instanciate modules
 
             for (let [mt, ref] of this._modules) {
                 // create the module instance
@@ -231,7 +246,7 @@ export class Application {
                     }
                 }
 
-                // finally add own providers
+                // finally add own declarations
                 if (declarations && declarations.length) {
                     for (let j = 0; j < declarations.length; ++j) {
                         if (out.indexOf(declarations[j]) === -1) {

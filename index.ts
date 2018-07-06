@@ -29,9 +29,14 @@ export { Application, APP_INITIALIZER } from './src/Application';
 export { Injectable, Inject, InjectionToken, IsInjectable, Optional } from './src/Injectable';
 export { Injector, GetInjectionTokens } from './src/Injector';
 export { Provider, ClassProvider, ValueProvider, TypeProvider, FactoryProvider } from './src/Provider';
-export { Controller } from './src/Controller';
 export { Type } from './src/Type';
 export { EventSource } from './src/EventSource';
 export { Router, RouteMatch, RouterInfo, RouteInfo } from './src/Router';
 export { ObjectUtils, ArrayUtils, StringUtils, PathUtils } from './src/Utils';
-export { CreateMetadataCtor, GetOrDefineMetadata, GetMetadata, FindMetadataOfType, META_ANNOTATIONS, META_PARAMETERS, META_PROPERTIES } from './src/Metadata';
+export {
+    MakeTypeDecorator, TypeDecorator,
+    MakeParameterDecorator, ParamDecorator,
+    MakePropertyDecorator, PropDecorator,
+    CreateMetadataCtor, GetOrDefineMetadata, GetMetadata, FindMetadataOfType,
+    META_ANNOTATIONS, META_PARAMETERS, META_PROPERTIES
+} from './src/Metadata';
