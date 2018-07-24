@@ -274,14 +274,14 @@ export class StaticInjector implements Injector {
 
                     }
 
-                    return deps_promises.then(() => {
-
-                        return instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
-
-                    }).then((value) => {
-                        record.value = value;
-                        return value;
-                    });
+                    return deps_promises
+                        .then(() => {
+                            return instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
+                        })
+                        .then((value) => {
+                            record.value = value;
+                            return value;
+                        });
 
                 }
                 else {

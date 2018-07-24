@@ -120,6 +120,13 @@ export function MakeParameterDecorator(
 
 }
 
+/**
+ * Create a property decorator
+ * @param name The name of the decorator
+ * @param props Function that returns a key/value map of the meta object properties
+ * @param parentClass The parent class of this decorator, can be null
+ * @param fn A function call after the metadata instance has been created
+ */
 export function MakePropertyDecorator(
     name: string,
     props?: (...args: any[]) => any,
