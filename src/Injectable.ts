@@ -15,17 +15,14 @@ export class InjectionToken<T> {
 }
 
 
+/**
+ * InjectableDecorator
+ */
 export interface InjectableDecorator {
     (): TypeDecorator;
     new(): Injectable;
 }
 
-/**
- * The Injectable interface
- */
-export interface Injectable {
-    token: any;
-}
 
 /**
  * Annotates a type as injectable
@@ -39,6 +36,13 @@ export const Injectable: InjectableDecorator =
             meta.token = GetMetadata('design:type', cls);
         }
     );
+
+/**
+* The Injectable interface
+*/
+export interface Injectable {
+    token: any;
+}
 
 
 
@@ -64,16 +68,13 @@ export function IsInjectable(type: Type<any>) {
 }
 
 
+/**
+ * InjectDecorator
+ */
 export interface InjectDecorator {
 
     (token: any): ParamDecorator;
     new(token: any): Inject;
-}
-/**
- * The Inject interface
- */
-export interface Inject {
-    token: any;
 }
 
 /**
@@ -91,12 +92,26 @@ export const Inject: InjectDecorator =
         }
     );
 
+/**
+* The Inject interface
+*/
+export interface Inject {
+    token: any;
+}
 
+
+
+/**
+ * OptionalDecorator
+ */
 export interface OptionalDecorator {
     (): ParamDecorator;
     new(): any;
 }
 
+/**
+ * Mark a parameter as optional
+ */
 export const Optional: OptionalDecorator =
     MakeParameterDecorator('Optional');
 

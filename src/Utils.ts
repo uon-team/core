@@ -336,8 +336,8 @@ export const PathUtils = {
 /**
  * Escape a regular expression string.
  *
- * @param  {string} str
- * @return {string}
+ * @param  str
+ * @return
  */
 function escapeString(str: string) {
     return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1')
@@ -346,8 +346,8 @@ function escapeString(str: string) {
 /**
  * Escape the capturing group by escaping special characters and meaning.
  *
- * @param  {string} group
- * @return {string}
+ * @param  group
+ * @return 
  */
 function escapeGroup(group: string) {
     return group.replace(/([=!:$/()])/g, '\\$1');

@@ -43,10 +43,7 @@ export class EventSource {
         list.push({ func, priority });
         list.sort((a,b) => {
             return a.priority - b.priority;    
-        })
-
-        //return this;
-
+        });
     }
 
     /**

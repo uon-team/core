@@ -28,10 +28,21 @@ export interface ModuleWithProviders {
 }
 
 
+/**
+ * ModuleDecorator
+ */
 export interface ModuleDecorator {
     (meta: Module): TypeDecorator;
     new(meta: Module): Module
 }
+
+
+/**
+ * Module decorator
+ */
+export const Module: ModuleDecorator =
+    MakeTypeDecorator('Module', (meta: Module) => meta);
+
 
 /**
  * The modules interface
@@ -51,9 +62,3 @@ export interface Module {
     declarations?: Type<any>[];
 
 }
-
-/**
- * Module decorator
- */
-export const Module: ModuleDecorator = 
-    MakeTypeDecorator('Module', (meta: Module) => meta);

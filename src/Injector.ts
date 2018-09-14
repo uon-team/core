@@ -55,18 +55,15 @@ export abstract class Injector {
 
     static readonly NULL = new NullInjector();
 
-
     abstract get<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): T;
 
     abstract getAsync<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): Promise<T>;
-
 
     abstract instanciate<T>(type: Type<T>): T;
 
     abstract instanciateAsync<T>(type: Type<T>): Promise<T>;
 
     static Create(providers: Provider[], parent?: Injector) {
-
         return new StaticInjector(providers, parent);
     }
 }

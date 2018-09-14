@@ -84,7 +84,6 @@ export class Router<T>  {
             if (!r.regex.test(path)) {
                 continue;
             }
-
             
 
             // check routes to see if they match

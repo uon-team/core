@@ -136,8 +136,6 @@ export class Application {
 
                 if (!module_ref) {
 
-
-
                     const ref = <ModuleRef<any>>({
                         module: mod,
                         type: module_type
@@ -148,7 +146,6 @@ export class Application {
 
                     // set the injector into module ref
                     ref.injector = injector;
-
 
                     // assign the module
                     this._modules.set(module_type, ref);
