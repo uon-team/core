@@ -3,9 +3,23 @@
 import { Type } from './Type';
 import { Module, ModuleRef, ModuleWithProviders } from './Module';
 import { Injector } from './Injector';
-import { CreateMetadataCtor, GetOrDefineMetadata, META_PROPERTIES, META_ANNOTATIONS } from './Metadata';
+import { CreateMetadataCtor, GetOrDefineMetadata, META_PROPERTIES, META_ANNOTATIONS, GetMetadata, FindMetadataOfType } from './Metadata';
 import { Injectable } from './Injectable';
 import { PathUtils } from './Utils';
+
+
+
+export interface Controller {
+    path: string;
+    priority?: number;
+    parent?: Type<any>;
+
+}
+
+export interface Handler {
+    path: string;
+
+}
 
 
 /**
@@ -14,18 +28,18 @@ import { PathUtils } from './Utils';
 export interface RouteMatch {
 
     path: string;
-    router: RouterInfo<any>;
+    router: RouterInfo<any, any>;
     route: RouteInfo<any>;
     params: { [k: string]: string };
 
 }
 
 
-export interface RouterInfo<T> {
+export interface RouterInfo<T extends Controller, H extends Handler> {
     path: string;
     type: Type<any>;
     metadata: T;
-    router?: Router<T>;
+    router?: Router<T,H>;
     routes?: RouteInfo<any>[];
     module?: ModuleRef<any>;
 }
@@ -39,10 +53,10 @@ export interface RouteInfo<T> {
 /**
  * The internal route storage
  */
-export interface RouterRecord<T> {
+export interface RouterRecord<T extends Controller, H extends Handler> {
 
     // the original route object
-    route: RouterInfo<T>;
+    route: RouterInfo<T, H>;
 
     // the regex to test the path with
     regex: RegExp;
@@ -52,19 +66,131 @@ export interface RouterRecord<T> {
 export type RouteMatchFunction = (ri: RouteInfo<any>, data: any) => boolean;
 
 
+
+const EMPTY_OBJECT = {};
+
 /**
  * The Router type
  */
-export class Router<T>  {
+export class Router<T extends Controller, H extends Handler>  {
 
 
-    readonly records: RouterRecord<T>[] = [];
+    readonly records: RouterRecord<T, H>[] = [];
 
     /**
      * Create a new router with provided routes
      * @param routes 
      */
-    constructor(private matchFunctions: RouteMatchFunction[] = []) {
+    constructor(private controllerType: Type<T>, 
+        private handlerType:Type<H>, 
+        private matchFunctions: RouteMatchFunction[] = []) {
+
+    }
+
+    /**
+     * Adds an entry to this router
+     * @param type 
+     * @param moduleRef 
+     */
+    add(type: Type<any>, moduleRef?: ModuleRef<any>) {
+
+        const properties = GetMetadata(META_PROPERTIES, type.prototype) || EMPTY_OBJECT;
+        const ctrl: T = FindMetadataOfType(META_ANNOTATIONS, type, this.controllerType);
+
+        const this_ctor: any = this.constructor;
+
+        if (ctrl) {
+
+            let handlers: RouteInfo<H>[] = [];
+
+            // go over all properties to find HttpRoutes
+            for (let name in properties) {
+                if (Array.isArray(properties[name])) {
+                    properties[name].forEach((p: any) => {
+                        if (p instanceof this.handlerType) {
+
+                            let h = p as H;
+                            let param_keys: string[] = [];
+
+                            // build regex
+                            let regex = PathUtils.pathToRegex(PathUtils.join(ctrl.path, h.path) || '/', param_keys);
+
+                            handlers.push({
+                                regex: regex,
+                                metadata: h,
+                                keys: param_keys
+                            });
+
+                        }
+                    });
+                }
+            }
+
+            // we only create an entry if path is defined
+            if (ctrl.path) {
+
+                let rbase: Router<T, H> = this;
+
+                // find parent if needed
+                if (ctrl.parent) {
+
+                    for (let j = 0; j < this.records.length; ++j) {
+
+                        if (this.records[j].route.type === ctrl.parent) {
+                            rbase = this.records[j].route.router as Router<T, H>;
+                            break;
+                        }
+                    }
+
+                    if (rbase === this) {
+                        throw new Error(`Couldnt find parent with type ${ctrl.parent.name}. Make sure it has been added first.`);
+                    }
+
+                }
+
+                let keys: string[] = [];
+                let regex = PathUtils.pathToRegex(ctrl.path + '(.*)', keys);
+
+                rbase.records.push({
+                    route: {
+                        type: type,
+                        path: ctrl.path,
+                        metadata: ctrl,
+                        router: new this_ctor(this.controllerType, this.handlerType, this.matchFunctions),
+                        routes: handlers,
+                        module: moduleRef
+                    },
+                    regex: regex
+                });
+            }
+        }
+
+        this.sort((a, b) => {
+            return a.route.metadata.priority - b.route.metadata.priority;
+        });
+
+    }
+
+    /**
+     * Remove all routes coming from a controller
+     * @param type 
+     */
+    remove(type: Type<any>) {
+
+
+        const records = this.records;
+
+        for(let i = records.length - 1; i >= 0; --i) {
+
+            let r = records[i];
+            if(r.route.type === type) {
+                records.splice(i, 1);
+                break;
+            }
+            else {
+                r.route.router.remove(type);
+            }
+        }
 
     }
 
@@ -124,7 +250,7 @@ export class Router<T>  {
      * Sort router records recursively
      * @param compareFn 
      */
-    sort(compareFn: (a: RouterRecord<T>, b: RouterRecord<T>) => number) {
+    sort(compareFn: (a: RouterRecord<T, H>, b: RouterRecord<T, H>) => number) {
 
 
         this.records.sort(compareFn);
