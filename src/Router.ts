@@ -156,7 +156,7 @@ export class Router<T extends Controller, H extends Handler>  {
                         type: type,
                         path: ctrl.path,
                         metadata: ctrl,
-                        router: new this_ctor(),
+                        router: new this_ctor(this.controllerType, this.handlerType, this.matchFunctions),
                         routes: handlers,
                         module: moduleRef
                     },
@@ -191,7 +191,6 @@ export class Router<T extends Controller, H extends Handler>  {
                 r.route.router.remove(type);
             }
         }
-
 
     }
 
