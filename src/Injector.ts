@@ -25,7 +25,8 @@ export class NullInjector implements Injector {
 
     get(token: any, defaultValue: any = _THROW_IF_NOT_FOUND): any {
         if (defaultValue === _THROW_IF_NOT_FOUND) {
-            throw new Error(`NullInjectorError: No provider for ${token.name}!`);
+            
+            throw new Error(`NullInjectorError: No provider for ${token.name || token.toString()}!`);
         }
         return defaultValue;
     }
