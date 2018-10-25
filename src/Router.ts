@@ -1,14 +1,17 @@
 
 
 import { Type } from './Type';
-import { Module, ModuleRef, ModuleWithProviders } from './Module';
-import { Injector } from './Injector';
-import { CreateMetadataCtor, GetOrDefineMetadata, META_PROPERTIES, META_ANNOTATIONS, GetMetadata, FindMetadataOfType } from './Metadata';
-import { Injectable } from './Injectable';
+import { ModuleRef } from './Module';
+import { META_PROPERTIES, META_ANNOTATIONS, GetMetadata, FindMetadataOfType, GetPropertiesMetadata } from './Metadata';
 import { PathUtils } from './Utils';
 
 
+const EMPTY_OBJECT: any = {};
 
+
+/**
+ * Base interface for controller decorators
+ */
 export interface Controller {
     path: string;
     priority?: number;
@@ -16,11 +19,13 @@ export interface Controller {
 
 }
 
+/**
+ * Base interface for handler decorators
+ */
 export interface Handler {
     path: string;
 
 }
-
 
 /**
  * The result of a match operation
@@ -67,7 +72,6 @@ export type RouteMatchFunction = (ri: RouteInfo<any>, data: any) => boolean;
 
 
 
-const EMPTY_OBJECT = {};
 
 /**
  * The Router type
@@ -75,8 +79,12 @@ const EMPTY_OBJECT = {};
 export class Router<T extends Controller, H extends Handler>  {
 
 
+    /**
+     * List of all current router records
+     */
     readonly records: RouterRecord<T, H>[] = [];
 
+    
     /**
      * Create a new router with provided routes
      * @param routes 
@@ -89,12 +97,12 @@ export class Router<T extends Controller, H extends Handler>  {
 
     /**
      * Adds an entry to this router
-     * @param type 
-     * @param moduleRef 
+     * @param type The decorated controller class
+     * @param moduleRef Optional module reference to keep in the router info
      */
     add(type: Type<any>, moduleRef?: ModuleRef<any>) {
 
-        const properties = GetMetadata(META_PROPERTIES, type.prototype) || EMPTY_OBJECT;
+        const properties = GetPropertiesMetadata(type.prototype) || EMPTY_OBJECT;
         const ctrl: T = FindMetadataOfType(META_ANNOTATIONS, type, this.controllerType);
 
         const this_ctor: any = this.constructor;
@@ -172,7 +180,7 @@ export class Router<T extends Controller, H extends Handler>  {
     }
 
     /**
-     * Remove all routes coming from a controller
+     * Remove all routes associated with a controller
      * @param type 
      */
     remove(type: Type<any>) {

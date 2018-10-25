@@ -41,8 +41,8 @@ export class EventSource {
         }
 
         list.push({ func, priority });
-        list.sort((a,b) => {
-            return a.priority - b.priority;    
+        list.sort((a, b) => {
+            return a.priority - b.priority;
         });
     }
 
@@ -71,9 +71,9 @@ export class EventSource {
         const list = this.__listeners[type];
         if (list) {
             let obj: EventContainer = null;
-            for(let i = 0, l = list.length; i < l; ++i) {
+            for (let i = 0, l = list.length; i < l; ++i) {
                 let o = list[i];
-                if(o.func === func) {
+                if (o.func === func) {
                     list.splice(i, 1);
                     break;
                 }

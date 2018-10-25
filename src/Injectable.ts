@@ -2,7 +2,14 @@
 
 import 'reflect-metadata';
 import { Type } from './Type';
-import { ParamDecorator, TypeDecorator, MakeParameterDecorator, MakeTypeDecorator, GetMetadata, META_ANNOTATIONS } from './Metadata';
+import {
+    ParamDecorator,
+    TypeDecorator,
+    MakeParameterDecorator,
+    MakeTypeDecorator,
+    GetMetadata,
+    GetTypeMetadata
+} from './Metadata';
 
 /**
  * Use InjectionToken as unique symbol
@@ -52,7 +59,7 @@ export interface Injectable {
  */
 export function IsInjectable(type: Type<any>) {
 
-    let annotations: any[] = GetMetadata(META_ANNOTATIONS, type);
+    let annotations: any[] = GetTypeMetadata(type);
 
     if (annotations) {
         for (let i = 0; i < annotations.length; ++i) {

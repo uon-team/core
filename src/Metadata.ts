@@ -134,45 +134,45 @@ export function MakePropertyDecorator(
     fn?: (cls: any, meta: any, key: string | symbol) => void) {
 
 
-        const meta_ctor = CreateMetadataCtor(props);
+    const meta_ctor = CreateMetadataCtor(props);
 
-        function PropertyDecoratorFactory(...args: any[]): PropDecorator {
-    
-            if (this instanceof PropertyDecoratorFactory) {
-                meta_ctor.call(this, ...args);
-                return this;
-            }
-    
-            const meta_instance = new (<any>PropertyDecoratorFactory)(...args);
-    
-            function PropDecorator(cls: any, key: string | symbol) {
-    
-                fn && fn(cls, meta_instance, key);
-    
-                let annotations = GetOrDefineMetadata(META_PROPERTIES, cls, {});
-    
-                annotations[key] = annotations[key] || [];
-                annotations[key].push(meta_instance)
-    
-            };
-    
-            return PropDecorator;
+    function PropertyDecoratorFactory(...args: any[]): PropDecorator {
+
+        if (this instanceof PropertyDecoratorFactory) {
+            meta_ctor.call(this, ...args);
+            return this;
         }
-    
-        if (parentClass) {
-            PropertyDecoratorFactory.prototype = Object.create(parentClass.prototype);
-        }
-    
-        PropertyDecoratorFactory.prototype.decoratorName = name;
-    
-        return PropertyDecoratorFactory as any;
+
+        const meta_instance = new (<any>PropertyDecoratorFactory)(...args);
+
+        function PropDecorator(cls: any, key: string | symbol) {
+
+            fn && fn(cls, meta_instance, key);
+
+            let annotations = GetOrDefineMetadata(META_PROPERTIES, cls, {});
+
+            annotations[key] = annotations[key] || [];
+            annotations[key].push(meta_instance)
+
+        };
+
+        return PropDecorator;
+    }
+
+    if (parentClass) {
+        PropertyDecoratorFactory.prototype = Object.create(parentClass.prototype);
+    }
+
+    PropertyDecoratorFactory.prototype.decoratorName = name;
+
+    return PropertyDecoratorFactory as any;
 }
 
 /**
- * 
+ * @private
  * @param properties A function that return a key-value map
  */
-export function CreateMetadataCtor(properties?: (...args: any[]) => any) {
+function CreateMetadataCtor(properties?: (...args: any[]) => any) {
     return function ctor(...args: any[]) {
         if (properties) {
             const values = properties(...args);
@@ -211,6 +211,32 @@ export function GetOrDefineMetadata(metadataKey: string, obj: any, defaultValue:
 export function GetMetadata(metadataKey: string, obj: any, key?: string) {
     return Reflect.getMetadata(metadataKey, obj, key);
 }
+
+
+/**
+ * Retrieves decoration metadata for a given prototype 
+ * @param proto 
+ */
+export function GetPropertiesMetadata(proto: any): { [k: string]: any[] } {
+    return GetMetadata(META_PROPERTIES, proto) || {};
+}
+
+/**
+ * Retrieves decoration metadata on a type
+ * @param type 
+ */
+export function GetTypeMetadata<T>(type: Type<T>): any[] {
+    return GetMetadata(META_ANNOTATIONS, type) || [];
+}
+
+/**
+ * Retrieves decoration metadata for a given prototype 
+ * @param proto 
+ */
+export function GetParametersMetadata(type: Function): any[] {
+    return GetMetadata(META_PARAMETERS, type) || [];
+}
+
 
 
 /**

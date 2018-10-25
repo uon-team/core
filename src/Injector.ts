@@ -5,7 +5,7 @@
 import { Type } from './Type'
 import { Provider, ValueProvider, FactoryProvider, ClassProvider } from './Provider';
 import { InjectionToken, Inject, Optional } from './Injectable';
-import { META_ANNOTATIONS, META_PROPERTIES, META_PARAMETERS } from './Metadata'
+import { GetParametersMetadata } from './Metadata'
 
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -440,7 +440,7 @@ export interface DependencyRecord {
 export function GetInjectionTokens(type: Type<any>): DependencyRecord[] {
 
     let param_types = Reflect.getMetadata('design:paramtypes', type);
-    let params: any[] = Reflect.getMetadata(META_PARAMETERS, type) || [];
+    let params: any[] = GetParametersMetadata(type) || [];
 
     let result: DependencyRecord[] = [];
     if (param_types) {

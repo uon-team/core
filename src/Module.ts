@@ -3,9 +3,7 @@
 import { Type } from './Type';
 import { Provider } from './Provider';
 import { Injector } from './Injector';
-import { CreateMetadataCtor, GetOrDefineMetadata, META_ANNOTATIONS, TypeDecorator, MakeTypeDecorator } from './Metadata';
-import { StringUtils } from './Utils';
-
+import { TypeDecorator, MakeTypeDecorator } from './Metadata';
 
 /**
  * A ModuleRef represents a Module instanciation
@@ -49,16 +47,25 @@ export const Module: ModuleDecorator =
  */
 export interface Module {
 
-    // An opaque id for the module
+    /**
+     *  An opaque id for the module
+     */
     id?: string;
 
-    // Modules dependencies
+    /**
+     * Modules on which this one depends
+     */
     imports?: Array<Type<any> | ModuleWithProviders>;
 
-    // Application level providers
+    /**
+     * Application level providers.
+     * Providers declared here are available application-wide
+     */
     providers?: Provider[];
 
-    // List of types to export with the module
+    /**
+     * List of types to export with the module
+     */
     declarations?: Type<any>[];
 
 }

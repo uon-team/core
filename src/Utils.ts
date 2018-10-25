@@ -273,7 +273,7 @@ export const PathUtils = {
                 optional: optional,
                 repeat: repeat,
                 partial: partial,
-                pattern: pattern ? escapeGroup(pattern) : '[^' + escapeString(delimiter) + ']+?'
+                pattern: pattern ? EscapeGroup(pattern) : '[^' + EscapeString(delimiter) + ']+?'
             })
         }
 
@@ -284,7 +284,7 @@ export const PathUtils = {
 
 
 
-        var delimiter = escapeString(PATH_DELIMITER)
+        var delimiter = EscapeString(PATH_DELIMITER)
 
         var endsWith = '$';
         var route = ''
@@ -295,10 +295,10 @@ export const PathUtils = {
             var token = tokens[i]
 
             if (typeof token === 'string') {
-                route += escapeString(token)
+                route += EscapeString(token)
                 isEndDelimited = i === tokens.length - 1 && delimiters.indexOf(token[token.length - 1]) > -1
             } else {
-                var prefix = escapeString(token.prefix)
+                var prefix = EscapeString(token.prefix)
                 var capture = token.repeat
                     ? '(?:' + token.pattern + ')(?:' + prefix + '(?:' + token.pattern + '))*'
                     : token.pattern
@@ -339,7 +339,7 @@ export const PathUtils = {
  * @param  str
  * @return
  */
-function escapeString(str: string) {
+function EscapeString(str: string) {
     return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1')
 }
 
@@ -349,6 +349,6 @@ function escapeString(str: string) {
  * @param  group
  * @return 
  */
-function escapeGroup(group: string) {
+function EscapeGroup(group: string) {
     return group.replace(/([=!:$/()])/g, '\\$1');
 }

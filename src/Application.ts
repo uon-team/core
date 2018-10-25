@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import { Type } from './Type';
 import { Module, ModuleRef, ModuleWithProviders } from './Module';
 import { Injector } from './Injector';
-import { META_ANNOTATIONS, META_PARAMETERS, META_PROPERTIES } from './Metadata';
+import { GetTypeMetadata } from './Metadata';
 import { InjectionToken } from './Injectable';
 import { Provider } from './Provider';
 
@@ -124,7 +124,7 @@ export class Application {
 
         let module: Module = null;
         let module_type: Type<any> = (type as ModuleWithProviders).module || (type as Type<any>);
-        let annotations: any[] = Reflect.getMetadata(META_ANNOTATIONS, module_type);
+        let annotations: any[] = GetTypeMetadata(module_type);
 
         for (let i = 0; i < annotations.length; ++i) {
 
@@ -170,7 +170,7 @@ export class Application {
         let module: Module = null;
         let module_type: Type<any> = (moduleType as ModuleWithProviders).module || (moduleType as Type<any>);
         let extra_providers: Provider[] = (moduleType as ModuleWithProviders).providers;
-        let annotations: any[] = Reflect.getMetadata(META_ANNOTATIONS, module_type);
+        let annotations: any[] = GetTypeMetadata(module_type);
 
         for (let i = 0; i < annotations.length; ++i) {
             let a = annotations[i];
@@ -219,7 +219,7 @@ export class Application {
         let module: Module = null;
         let module_type: Type<any> = (moduleType as ModuleWithProviders).module || (moduleType as Type<any>);
         //let extra_providers: Provider[] = (moduleType as ModuleWithProviders).providers;
-        let annotations: any[] = Reflect.getMetadata(META_ANNOTATIONS, module_type);
+        let annotations: any[] = GetTypeMetadata(module_type);
 
         for (let i = 0; i < annotations.length; ++i) {
             let a = annotations[i];

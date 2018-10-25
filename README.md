@@ -8,6 +8,20 @@ A modular application framework with dependency injection.
 ```
 
 
+## Application Structure
 
 
-## Limitations
+### Modules
+
+
+### Injectors and Providers
+
+
+### Routing
+
+
+
+
+## TODO
+
+- cleanup metadata public api
