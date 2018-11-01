@@ -10,6 +10,7 @@ import {
     GetMetadata,
     GetTypeMetadata
 } from './Metadata';
+import { MakeUnique } from './Unique';
 
 /**
  * Use InjectionToken as unique symbol
@@ -35,14 +36,15 @@ export interface InjectableDecorator {
  * Annotates a type as injectable
  */
 export const Injectable: InjectableDecorator =
-    MakeTypeDecorator(
-        'Injectable', // name
-        (token: any) => ({ token }), // properties
-        null, // parent
-        (cls: any, meta: any) => {
-            meta.token = GetMetadata('design:type', cls);
-        }
-    );
+    MakeUnique("@uon/core/Injectable",
+        MakeTypeDecorator(
+            'Injectable', // name
+            (token: any) => ({ token }), // properties
+            null, // parent
+            (cls: any, meta: any) => {
+                meta.token = GetMetadata('design:type', cls);
+            }
+        ));
 
 /**
 * The Injectable interface
@@ -88,16 +90,17 @@ export interface InjectDecorator {
  * The Inject() parameter decorator
  */
 export const Inject: InjectDecorator =
-    MakeParameterDecorator(
-        'Inject',
-        (token: any) => ({ token }),
-        null,
-        (cls: any, meta: Inject, index: number) => {
-            if (!meta.token) {
-                meta.token = GetMetadata('design:paramtypes', cls)[index];
+    MakeUnique("@uon/core/Inject",
+        MakeParameterDecorator(
+            'Inject',
+            (token: any) => ({ token }),
+            null,
+            (cls: any, meta: Inject, index: number) => {
+                if (!meta.token) {
+                    meta.token = GetMetadata('design:paramtypes', cls)[index];
+                }
             }
-        }
-    );
+        ));
 
 /**
 * The Inject interface
@@ -120,6 +123,7 @@ export interface OptionalDecorator {
  * Mark a parameter as optional
  */
 export const Optional: OptionalDecorator =
-    MakeParameterDecorator('Optional');
+    MakeUnique("@uon/core/Optional",
+        MakeParameterDecorator('Optional'));
 
 

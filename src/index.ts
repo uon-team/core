@@ -13,6 +13,7 @@ export * from './Injector';
 export * from './Metadata';
 export * from './Module';
 export * from './Provider';
-export * from './Router';
 export * from './Type';
+export * from './Unique';
 export * from './Utils';
+
