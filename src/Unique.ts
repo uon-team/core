@@ -3,7 +3,14 @@
 declare var global: any;
 declare var window: any;
 
-const GLOBAL: any = global || window;
+var GLOBAL: any;
+try {
+    GLOBAL = global;
+}
+catch {
+    GLOBAL = window;
+}
+
 
 export function MakeUnique<T>(id: string, value: T): T {
 
