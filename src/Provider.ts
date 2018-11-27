@@ -1,6 +1,8 @@
 
 
 import { Type } from './Type';
+import { InjectionToken } from './Injectable';
+import { Injector } from './Injector';
 
 
 
@@ -35,8 +37,24 @@ export interface FactoryProvider {
     multi?: boolean;
 }
 
-export interface TypeProvider extends Type<any> {}
+export interface TypeProvider extends Type<any> { }
 
 
 
 export type Provider = TypeProvider | ValueProvider | ClassProvider | FactoryProvider;
+
+
+
+export function ProvideInjectable<T>(token: InjectionToken<T>, type: Type<T>, multi: boolean = false): Provider {
+
+
+    return {
+        token,
+        multi,
+        factory: (i: Injector) => {
+            return i.instanciate(type);
+        },
+        deps: [Injector]
+    };
+
+}
