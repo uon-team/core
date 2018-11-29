@@ -1,15 +1,4 @@
-
-
-declare var global: any;
-declare var window: any;
-
-var GLOBAL: any;
-try {
-    GLOBAL = global;
-}
-catch {
-    GLOBAL = window;
-}
+import { GLOBAL } from "./Utils";
 
 
 export function MakeUnique<T>(id: string, value: T): T {
