@@ -4,7 +4,7 @@ A modular application framework with dependency injection.
 
 ## Usage
 ```shell
-    npm i @uon/core
+npm i @uon/core
 ```
 
 
@@ -17,11 +17,7 @@ A modular application framework with dependency injection.
 ### Injectors and Providers
 
 
-### Routing
-
-
-
 
 ## TODO
-
+- Document
 - cleanup metadata public api

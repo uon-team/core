@@ -2,6 +2,7 @@
 
 import 'reflect-metadata';
 import { Type } from './Type';
+import { MakeUnique } from './Unique';
 import {
     ParamDecorator,
     TypeDecorator,
@@ -10,7 +11,6 @@ import {
     GetMetadata,
     GetTypeMetadata
 } from './Metadata';
-import { MakeUnique } from './Unique';
 
 /**
  * Use InjectionToken as unique symbol

@@ -16,8 +16,6 @@ const CIRCULAR_VALUE = {};
 const MULTIPROVIDER_FUNC = function (): any[] { return Array.prototype.slice.call(arguments) };
 
 
-
-
 /**
  * A NullInjector always returns the default or can throw
  */
@@ -25,18 +23,18 @@ export class NullInjector implements Injector {
 
     get(token: any, defaultValue: any = _THROW_IF_NOT_FOUND): any {
         if (defaultValue === _THROW_IF_NOT_FOUND) {
-            
+
             throw new Error(`NullInjectorError: No provider for ${token.name || token.toString()}!`);
         }
         return defaultValue;
     }
 
-    getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
+    async getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
 
         if (defaultValue === _THROW_IF_NOT_FOUND) {
-            return Promise.reject(new Error(`NullInjectorError: No provider for ${token}!`));
+            return new Error(`NullInjectorError: No provider for ${token}!`);
         }
-        return Promise.resolve(defaultValue);
+        return defaultValue;
 
     }
 
@@ -44,8 +42,8 @@ export class NullInjector implements Injector {
         throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
     }
 
-    instanciateAsync<T>(type: Type<any>): Promise<any> {
-        return Promise.reject(`NullInjectorError: Cannot instanciate on a NullInjector`);
+    async instanciateAsync<T>(type: Type<any>): Promise<any> {
+        throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
     }
 }
 
@@ -108,18 +106,17 @@ export class StaticInjector implements Injector {
      * @param token 
      * @param defaultValue 
      */
-    getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
+    async getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
+
         const record = this.records.get(token);
 
-        return this.resolveTokenAsync(token, record, defaultValue).then((val) => {
-
-            return val;
-        });
+        const val = await this.resolveTokenAsync(token, record, defaultValue);
+        return val;
     }
 
 
     /**
-     * 
+     * Instanciate a type 
      * @param type Instanciate a class with dependencies
      */
     instanciate<T>(type: Type<T>): T {
@@ -137,31 +134,23 @@ export class StaticInjector implements Injector {
     }
 
     /**
-     * Do the instaciation asynchronously
+     * Instanciate a type asynchronously
      * @param type 
      */
-    instanciateAsync<T>(type: Type<T>): Promise<T> {
+    async instanciateAsync<T>(type: Type<T>): Promise<T> {
 
         let p = Promise.resolve();
 
         let dep_records = GetInjectionTokens(type);
         let deps: any[] = [];
 
-        dep_records.forEach((it) => {
+        for (let i = 0, l = dep_records.length; i < l; ++i) {
+            const it = dep_records[i];
+            const val = await this.getAsync(it.token, it.optional ? null : THROW_IF_NOT_FOUND);
+            deps.push(val);
+        }
 
-            p = p.then(() => {
-                return this.getAsync(it.token, it.optional ? null : THROW_IF_NOT_FOUND);
-            }).then((val) => {
-                deps.push(val);
-            });
-
-        });
-
-        // finally instanciate the object
-        return p.then(() => {
-
-            return new (type as any)(...deps);
-        });
+        return new (type as any)(...deps);
     }
 
     /**
@@ -230,65 +219,47 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any): Promise<any> {
+    private async resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any): Promise<any> {
 
         if (record) {
 
-            return Promise.resolve().then(() => {
+            let value = record.value;
 
-                let value = record.value;
+            if (value == CIRCULAR_VALUE) {
+                throw new Error("Circular dependency");
+            }
+            else if (value === EMPTY_VALUE) {
 
-                if (value == CIRCULAR_VALUE) {
-                    throw new Error("Circular dependency");
-                }
-                else if (value === EMPTY_VALUE) {
+                record.value = CIRCULAR_VALUE;
 
-                    record.value = CIRCULAR_VALUE;
+                let obj: any = undefined;
+                let instanciate = record.instanciate;
+                let func = record.func;
+                let dep_records = record.deps;
+                let deps: any[] = [];
+                if (dep_records.length) {
+                    for (let i = 0; i < dep_records.length; ++i) {
 
-                    let obj: any = undefined;
-                    let instanciate = record.instanciate;
-                    let func = record.func;
-                    let dep_records = record.deps;
-                    let deps_promises = Promise.resolve();
-                    let deps: any[] = [];
-                    if (dep_records.length) {
-                        for (let i = 0; i < dep_records.length; ++i) {
+                        const dep_record = dep_records[i];
+                        const child_rec = this.records.get(dep_record.token);
 
-                            const dep_record = dep_records[i];
-                            const child_rec = this.records.get(dep_record.token);
-                            const resolved_dep = this.resolveTokenAsync(
-                                dep_record.token,
-                                child_rec,
-                                dep_record.optional ? null : THROW_IF_NOT_FOUND,
-                            );
-                            deps_promises = deps_promises.then(() => {
-                                return resolved_dep.then((d) => {
-                                    deps.push(d);
-                                });
-                            })
+                        const resolved_dep = await this.resolveTokenAsync(
+                            dep_record.token,
+                            child_rec,
+                            dep_record.optional ? null : THROW_IF_NOT_FOUND,
+                        );
 
-
-                        }
-
+                        deps.push(resolved_dep);
+                       
                     }
 
-                    return deps_promises
-                        .then(() => {
-                            return instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
-                        })
-                        .then((value) => {
-                            record.value = value;
-                            return value;
-                        });
-
-                }
-                else {
-                    return Promise.resolve(record.value);
                 }
 
-
-            });
-
+                let value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
+                record.value = value;
+            }
+            
+            return record.value;
 
         }
         else {

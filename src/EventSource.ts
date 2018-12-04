@@ -13,7 +13,7 @@ type EventMap = { [k: string]: EventContainer[] };
 
 
 /**
- * A Promise-based event emiter implementation, 
+ * A async event emiter implementation, 
  * When emit is called, all listeners are executed sequentially
  */
 export class EventSource {
@@ -97,23 +97,17 @@ export class EventSource {
      * @param type 
      * @param args 
      */
-    emit(type: string, ...args: any[]): Promise<any> {
+    async emit(type: string, ...args: any[]): Promise<void> {
 
         const list = this.__listeners[type];
-        let chain = Promise.resolve();
-
         if (!list) {
-            return chain;
+            return;
         }
 
         for (let i = 0, l = list.length; i < l; ++i) {
             let e = list[i];
-            chain = chain.then(() => {
-                return e.func.apply(this, args);
-            });
+            await e.func.apply(this, args);
         }
-
-        return chain;
 
     }
 }

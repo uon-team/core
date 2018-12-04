@@ -66,10 +66,16 @@ export class Application {
         return this._modules;
     }
 
+    /**
+     * Get the entrypoint module type
+     */
     get mainModuleType() {
         return this.mainModuleClass;
     }
 
+    /**
+     * Get a list of all declaration defined in the module tree
+     */
     get declarations() {
         return this._declarations;
     }
@@ -77,40 +83,24 @@ export class Application {
     /**
      * Start the application
      */
-    start(): Promise<boolean> {
+    async start(): Promise<boolean> {
 
         // get the initializer list
-
         const initializers = this._injector.get(APP_INITIALIZER, []);
-        let promise_chain = Promise.resolve();
 
-        // chain initializers if they return a promise
+        // chain initializers
         for (let i = 0; i < initializers.length; ++i) {
-
-            let initer = initializers[i];
-
-            if (initer instanceof Promise) {
-                promise_chain = promise_chain.then(() => {
-                    return initer;
-                });
-            }
-
+            await initializers[i];
         }
 
-        // wait until it's all resolved and return true
-        return promise_chain.then(() => {
+        // instanciate modules
+        for (let [mt, ref] of this._modules) {
+            // create the module instance
+            let instance = ref.injector.instanciate(mt);
+            ref.instance = instance;
+        }
 
-
-            // instanciate modules
-
-            for (let [mt, ref] of this._modules) {
-                // create the module instance
-                let instance = ref.injector.instanciate(mt);
-                ref.instance = instance;
-            }
-
-            return true;
-        });
+        return true;
     }
 
 
