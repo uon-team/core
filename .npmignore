@@ -6,3 +6,4 @@
 /typings
 /src
 *.log
+tsconfig.json
