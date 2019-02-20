@@ -82,19 +82,21 @@ export const StringUtils = {
 
     /**
      * Transform an hypenated(with : - _ .) to camelcase
-     * @param str 
+     * @param str the subject
+     * @param upperCamelCase wheter to capitalize the first letter
      */
-    camelCase(str: string) {
+    camelCase(str: string, upperCamelCase?: boolean) {
 
         return str.replace(/([\:\-\_\.]+(.))/g, (_, separator, letter, offset) => {
 
-            return offset ? letter.toUpperCase() : letter;
+            return offset || upperCamelCase ? letter.toUpperCase() : letter;
         });
     },
 
     /**
      * Hypenate a camelcased string
-     * @param str 
+     * @param str the camelCase string
+     * @param sep the separator to use, defaults to '-'
      */
     hyphenate(str: string, sep: string = '-') {
 
@@ -103,7 +105,6 @@ export const StringUtils = {
                 return (sep + match.charAt(0).toLowerCase());
             })
             .replace(new RegExp(`^${sep}`), '');
-
 
     },
 
