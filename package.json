@@ -1,12 +1,8 @@
 {
   "name": "@uon/core",
-  "version": "0.4.0",
+  "version": "0.9.0",
   "description": "A library for building server and web applications",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "prepublishOnly": "tsc -p ./ --outDir dist/"
-  },
+  "main": "dist/index.js",
   "dependencies": {
     "reflect-metadata": "^0.1.12"
   },
@@ -28,6 +24,7 @@
     "application",
     "uon",
     "decorators",
+    "dependency-injection",
     "typescript"
   ]
 }
