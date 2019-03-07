@@ -1,22 +1,25 @@
 {
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "module": "commonjs",
-    "target": "es2015",
-    "noImplicitAny": true,
-    "sourceMap": true,
-    "declaration": true,
-    "outDir": "dist/",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  },
-  "lib": [ "es2015" ],
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "typings/global",
-    "typings/global.d.ts"
-  ]
+    "compilerOptions": {
+        "baseUrl": "./",
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "target": "es2015",
+        "noImplicitAny": true,
+        "inlineSourceMap": true,
+        "declaration": true,
+        "outDir": "dist/",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "lib": [
+            "es2015"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "typings/global",
+        "typings/global.d.ts"
+    ]
 }
