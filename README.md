@@ -7,7 +7,6 @@ A modular application framework with dependency injection.
 npm i @uon/core
 ```
 
-
 ## Application Structure
 
 

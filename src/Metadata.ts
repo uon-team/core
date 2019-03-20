@@ -230,7 +230,7 @@ export function GetTypeMetadata<T>(type: Type<T>): any[] {
 }
 
 /**
- * Retrieves decoration metadata for a given prototype 
+ * Retrieves decoration metadata for a function's parameters
  * @param proto 
  */
 export function GetParametersMetadata(type: Function): any[] {

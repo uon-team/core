@@ -5,7 +5,7 @@
         "module": "commonjs",
         "target": "es2015",
         "noImplicitAny": true,
-        "inlineSourceMap": true,
+        "sourceMap": true,
         "declaration": true,
         "outDir": "dist/",
         "experimentalDecorators": true,

@@ -12,7 +12,7 @@ import { MakeUnique } from './Unique';
 export class ModuleRef<T> {
 
     module: Module;
-    type: Type<any>;
+    type: Type<T>;
     instance: T;
     injector: Injector;
 }
@@ -21,8 +21,8 @@ export class ModuleRef<T> {
 /**
  * A module with extra providers
  */
-export interface ModuleWithProviders {
-    module: Type<any>;
+export interface ModuleWithProviders<T = any> {
+    module: Type<T>;
     providers: Provider[];
 }
 

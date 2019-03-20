@@ -54,14 +54,41 @@ export abstract class Injector {
 
     static readonly NULL = new NullInjector();
 
+    /**
+     * Retrieve or instanciate a value associated with a token.
+     * @param token 
+     * @param defaultValue 
+     */
     abstract get<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): T;
 
+
+    /**
+     * Asyncronously retrieve or instanciate a value associated with a token.
+     * @param token 
+     * @param defaultValue 
+     */
     abstract getAsync<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): Promise<T>;
 
+
+    /**
+     * Instanciate a class 
+     * @param type 
+     */
     abstract instanciate<T>(type: Type<T>): T;
 
+    /**
+     * Asyncronoulsy instanciate a class 
+     * @param type 
+     */
     abstract instanciateAsync<T>(type: Type<T>): Promise<T>;
 
+
+    /**
+     * Create an injector with a list of providers and optionally
+     * a parent injector.
+     * @param providers 
+     * @param parent 
+     */
     static Create(providers: Provider[], parent?: Injector) {
         return new StaticInjector(providers, parent);
     }
@@ -74,7 +101,6 @@ export abstract class Injector {
 export class StaticInjector implements Injector {
 
     readonly parent: Injector;
-
     private records: Map<any, InjectionRecord>;
 
     constructor(providers: Provider[], parent: Injector = Injector.NULL) {
@@ -89,11 +115,6 @@ export class StaticInjector implements Injector {
         this.recursivelyResolveProviders(providers);
     }
 
-    /**
-     * Retrieve a value
-     * @param token 
-     * @param defaultValue 
-     */
     get<T>(token: Type<T> | InjectionToken<T>, defaultValue?: T): T {
 
         const record = this.records.get(token);
@@ -114,11 +135,6 @@ export class StaticInjector implements Injector {
         return val;
     }
 
-
-    /**
-     * Instanciate a type 
-     * @param type Instanciate a class with dependencies
-     */
     instanciate<T>(type: Type<T>): T {
 
         // get deps for ctor
@@ -133,10 +149,6 @@ export class StaticInjector implements Injector {
 
     }
 
-    /**
-     * Instanciate a type asynchronously
-     * @param type 
-     */
     async instanciateAsync<T>(type: Type<T>): Promise<T> {
 
         let p = Promise.resolve();
@@ -250,7 +262,7 @@ export class StaticInjector implements Injector {
                         );
 
                         deps.push(resolved_dep);
-                       
+
                     }
 
                 }
@@ -258,7 +270,7 @@ export class StaticInjector implements Injector {
                 let value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
                 record.value = value;
             }
-            
+
             return record.value;
 
         }

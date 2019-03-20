@@ -1,5 +1,6 @@
 
 declare var global: any;
+declare var self: any;
 
 /**
  * Reference to the global object, either window or global
@@ -16,6 +17,7 @@ export const ObjectUtils = {
 
     /**
      * Does a shallow merge of ...others with target
+     * @deprecated Use Object.assign() instead
      */
     extend(target: any, ...others: any[]) {
 
@@ -45,7 +47,7 @@ export const ArrayUtils = {
      * @param target 
      * @param obj 
      */
-    include(target: any[], obj: any) {
+    include<T>(target: T[], obj: T) {
 
         if (target.indexOf(obj) !== -1) {
             target.push(obj);
@@ -60,7 +62,7 @@ export const ArrayUtils = {
      * @param obj 
      * @returns true if an element was removed, false otherwise 
      */
-    erase(target: any[], obj: any) {
+    erase<T>(target: T[], obj: T) {
 
         let index = target.indexOf(obj);
         if (index > -1) {
@@ -196,7 +198,7 @@ export const PathUtils = {
             new_parts.unshift("");
         }
 
-        // Turn back into a single string path.
+        // turn back into a single string path
         return new_parts.join(PATH_DELIMITER);
 
     }
@@ -204,3 +206,25 @@ export const PathUtils = {
 
 }
 
+
+// type utilities
+
+/**
+ * Get the array element type
+ */
+export type Unpack<T> = T extends (infer U)[] ? U : T;
+
+/**
+ * Returns U if M extends T
+ */
+export type Include<M, T, U> = M extends T ? U : never;
+
+/**
+ * Extract property names of type P
+ */
+export type PropertyNamesOfType<T, P> = { [K in keyof T]: T[K] extends P ? K : never }[keyof T];
+
+/**
+ * Extract property names not of type P
+ */
+export type PropertyNamesNotOfType<T, P> = { [K in keyof T]: T[K] extends P ? never : K }[keyof T];
