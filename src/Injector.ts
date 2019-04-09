@@ -45,6 +45,10 @@ export class NullInjector implements Injector {
     async instanciateAsync<T>(type: Type<any>): Promise<any> {
         throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
     }
+
+    async invokeAsync<T extends (...args: any[]) => any>(func: T): Promise<ReturnType<T>> {
+        throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
+    }
 }
 
 /**
@@ -81,6 +85,13 @@ export abstract class Injector {
      * @param type 
      */
     abstract instanciateAsync<T>(type: Type<T>): Promise<T>;
+
+
+    /**
+     * Asyncronoulsy instanciate a class 
+     * @param type 
+     */
+    abstract invokeAsync<T extends (...args: any[]) => any>(func: T): Promise<ReturnType<T>>;
 
 
     /**
@@ -163,6 +174,21 @@ export class StaticInjector implements Injector {
         }
 
         return new (type as any)(...deps);
+    }
+
+    async invokeAsync<T extends (...args: any[]) => any>(func: T): Promise<ReturnType<T>> {
+
+
+        let dep_records = GetInjectionTokens(func);
+        let deps: any[] = [];
+
+        for (let i = 0, l = dep_records.length; i < l; ++i) {
+            const it = dep_records[i];
+            const val = await this.getAsync(it.token, it.optional ? null : THROW_IF_NOT_FOUND);
+            deps.push(val);
+        }
+
+        return func(...deps);
     }
 
     /**
@@ -421,7 +447,7 @@ export interface DependencyRecord {
  * Extracts the constructor's parameter tokens
  * @param type The class to extract ctor parameter tokens from
  */
-export function GetInjectionTokens(type: Type<any>): DependencyRecord[] {
+export function GetInjectionTokens(type: Type<any> | Function): DependencyRecord[] {
 
     let param_types = Reflect.getMetadata('design:paramtypes', type);
     let params: any[] = GetParametersMetadata(type) || [];

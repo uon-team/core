@@ -17,11 +17,10 @@ export const ObjectUtils = {
 
     /**
      * Does a shallow merge of ...others with target
-     * @deprecated Use Object.assign() instead
+     * @deprecated Use Object.assign() or spread operator instead
      */
     extend(target: any, ...others: any[]) {
-
-        var i, l, key, source;
+        let i, l, key, source;
 
         for (i = 0, l = others.length; i < l; i++) {
             source = others[i];
@@ -33,6 +32,22 @@ export const ObjectUtils = {
         return target;
 
     },
+
+    /**
+     * Create a new object keeping only specified key/value pairs from
+     * target.
+     * @param target 
+     * @param fields 
+     */
+    filter(target: any, fields: string[]) {
+        let result: any = {};
+        for (let i = 0; i < fields.length; ++i) {
+            let field = fields[i];
+            result[field] = target[field];
+        }
+
+        return result;
+    }
 
 };
 
@@ -48,7 +63,6 @@ export const ArrayUtils = {
      * @param obj 
      */
     include<T>(target: T[], obj: T) {
-
         if (target.indexOf(obj) !== -1) {
             target.push(obj);
         }
@@ -63,15 +77,24 @@ export const ArrayUtils = {
      * @returns true if an element was removed, false otherwise 
      */
     erase<T>(target: T[], obj: T) {
-
         let index = target.indexOf(obj);
         if (index > -1) {
-
             target.splice(index, 1);
             return true;
         }
 
         return false;
+    },
+
+    /**
+     * Remove all duplicate elements from the target array
+     * @param target 
+     */
+    distinct<T>(target: T[]) {
+
+
+
+
     }
 
 
@@ -85,7 +108,7 @@ export const StringUtils = {
     /**
      * Transform an hypenated(with : - _ .) to camelcase
      * @param str the subject
-     * @param upperCamelCase wheter to capitalize the first letter
+     * @param upperCamelCase if true, capitalize the first letter
      */
     camelCase(str: string, upperCamelCase?: boolean) {
 

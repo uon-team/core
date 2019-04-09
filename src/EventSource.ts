@@ -13,12 +13,12 @@ type EventMap = { [k: string]: EventContainer[] };
 
 
 /**
- * A async event emiter implementation, 
+ * An async event emiter implementation, 
  * When emit is called, all listeners are executed sequentially
  */
 export class EventSource {
 
-    private __listeners: EventMap = {};
+    private __l: EventMap = {};
 
     /**
      * 
@@ -35,9 +35,9 @@ export class EventSource {
      */
     on(type: string, func: EventHandler, priority: number = 100): void {
 
-        let list = this.__listeners[type];
+        let list = this.__l[type];
         if (!list) {
-            list = this.__listeners[type] = [];
+            list = this.__l[type] = [];
         }
 
         list.push({ func, priority });
@@ -68,7 +68,7 @@ export class EventSource {
      * @param func 
      */
     removeListener(type: string, func: EventHandler) {
-        const list = this.__listeners[type];
+        const list = this.__l[type];
         if (list) {
             let obj: EventContainer = null;
             for (let i = 0, l = list.length; i < l; ++i) {
@@ -88,7 +88,7 @@ export class EventSource {
      * @param type 
      */
     removeListeners(type: string) {
-        delete this.__listeners[type];
+        delete this.__l[type];
     }
 
     /**
@@ -99,7 +99,7 @@ export class EventSource {
      */
     async emit(type: string, ...args: any[]): Promise<void> {
 
-        const list = this.__listeners[type];
+        const list = this.__l[type];
         if (!list) {
             return;
         }
