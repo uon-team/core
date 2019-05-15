@@ -48,7 +48,7 @@ export function MakeTypeDecorator(
 
             fn && fn(cls, meta_instance);
 
-            let annotations = GetOrDefineMetadata(META_ANNOTATIONS, cls, []);
+            let annotations = GetOrDefineMetadata(META_ANNOTATIONS, cls, undefined, []);
             annotations.push(meta_instance);
             return cls;
         };
@@ -94,7 +94,7 @@ export function MakeParameterDecorator(
 
             fn && fn(cls, meta_instance, index);
 
-            let annotations = GetOrDefineMetadata(META_PARAMETERS, cls, []);
+            let annotations = GetOrDefineMetadata(META_PARAMETERS, cls, key, []);
 
             // insert the annotation in its own array, 
             // but first pad array with null values
@@ -149,7 +149,7 @@ export function MakePropertyDecorator(
 
             fn && fn(cls, meta_instance, key);
 
-            let annotations = GetOrDefineMetadata(META_PROPERTIES, cls, {});
+            let annotations = GetOrDefineMetadata(META_PROPERTIES, cls, undefined, {});
 
             annotations[key] = annotations[key] || [];
             annotations[key].push(meta_instance)
@@ -191,13 +191,13 @@ function CreateMetadataCtor(properties?: (...args: any[]) => any) {
  * @param obj 
  * @param defaultValue 
  */
-export function GetOrDefineMetadata(metadataKey: string, obj: any, defaultValue: any = []): any {
+export function GetOrDefineMetadata(metadataKey: string, obj: any, key: string | symbol = undefined, defaultValue: any = []): any {
 
-    let annot: any = Reflect.getMetadata(metadataKey, obj);
+    let annot: any = Reflect.getMetadata(metadataKey, obj, key);
 
     if (!annot) {
         annot = defaultValue;
-        Reflect.defineMetadata(metadataKey, annot, obj);
+        Reflect.defineMetadata(metadataKey, annot, obj, key);
     }
 
     return annot;
@@ -233,8 +233,8 @@ export function GetTypeMetadata<T>(type: Type<T>): any[] {
  * Retrieves decoration metadata for a function's parameters
  * @param proto 
  */
-export function GetParametersMetadata(type: Function): any[] {
-    return GetMetadata(META_PARAMETERS, type) || [];
+export function GetParametersMetadata(type: Function, key?: string): any[] {
+    return GetMetadata(META_PARAMETERS, type, key) || [];
 }
 
 

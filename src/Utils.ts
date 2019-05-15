@@ -63,7 +63,7 @@ export const ArrayUtils = {
      * @param obj 
      */
     include<T>(target: T[], obj: T) {
-        if (target.indexOf(obj) !== -1) {
+        if (target.indexOf(obj) === -1) {
             target.push(obj);
         }
 
@@ -84,17 +84,6 @@ export const ArrayUtils = {
         }
 
         return false;
-    },
-
-    /**
-     * Remove all duplicate elements from the target array
-     * @param target 
-     */
-    distinct<T>(target: T[]) {
-
-
-
-
     }
 
 

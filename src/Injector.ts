@@ -447,10 +447,10 @@ export interface DependencyRecord {
  * Extracts the constructor's parameter tokens
  * @param type The class to extract ctor parameter tokens from
  */
-export function GetInjectionTokens(type: Type<any> | Function): DependencyRecord[] {
+export function GetInjectionTokens(type: Type<any> | Function, key?: string): DependencyRecord[] {
 
-    let param_types = Reflect.getMetadata('design:paramtypes', type);
-    let params: any[] = GetParametersMetadata(type) || [];
+    let param_types = Reflect.getMetadata('design:paramtypes', type, key);
+    let params: any[] = GetParametersMetadata(type, key) || [];
 
     let result: DependencyRecord[] = [];
     if (param_types) {
