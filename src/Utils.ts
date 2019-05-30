@@ -58,7 +58,8 @@ export const ArrayUtils = {
 
 
     /**
-     * Add an element to an array if it isn't already contained
+     * Add an element to an array if it isn't already contained.
+     * Uses strict equality as a predicate
      * @param target 
      * @param obj 
      */
@@ -90,7 +91,7 @@ export const ArrayUtils = {
 };
 
 /**
- * Some string manipulation utility function
+ * A collection of string manipulation functions
  */
 export const StringUtils = {
 
@@ -168,6 +169,55 @@ export const StringUtils = {
                 : ss
                 ;
         });
+    },
+
+    /**
+     * Pad a string or number from the left side.
+     * If {padWith} length does not execatly fit it is sliced from the back.
+     * @param val 
+     * @param maxLen Thelength of the resulting string
+     * @param padWith The content to pad with, can be longer then 1 character
+     */
+    padLeft(val: number | string, maxLen: number, padWith: string) {
+
+        const str = String(val);
+        const str_len = str.length;
+        const pad_len = padWith.length;
+        const padding_width = maxLen - str_len;
+        const pad_count = Math.floor(padding_width / pad_len);
+        const remainder_len = padding_width % pad_len;
+        let result = remainder_len ? padWith.slice(-remainder_len) : '';
+
+        for (let i = 0; i < pad_count; ++i) {
+            result += padWith;
+        }
+
+        return result + str;
+
+    },
+
+    /**
+     * Pad a string or number to the right
+     * @param val 
+     * @param maxLen 
+     * @param padWith 
+     */
+    padRight(val: number | string, maxLen: number, padWith: string) {
+
+        const str = String(val);
+        const str_len = str.length;
+        const pad_len = padWith.length;
+        const padding_width = maxLen - str_len;
+        const pad_count = Math.floor(padding_width / pad_len);
+        const remainder_len = padding_width % pad_len;
+        let result = str;
+
+        for (let i = 0; i < pad_count; ++i) {
+            result += padWith;
+        }
+
+        return result + (remainder_len ? padWith.substr(0, remainder_len) : '');
+
     }
 
 };
