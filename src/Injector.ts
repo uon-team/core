@@ -63,7 +63,7 @@ export abstract class Injector {
      * @param token 
      * @param defaultValue 
      */
-    abstract get<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): T;
+    abstract get<T>(token: Type<T> | InjectionToken<T>, defaultValue?: any): T;
 
 
     /**
@@ -71,7 +71,7 @@ export abstract class Injector {
      * @param token 
      * @param defaultValue 
      */
-    abstract getAsync<T>(token: Type<any> | InjectionToken<any>, defaultValue?: T): Promise<T>;
+    abstract getAsync<T>(token: Type<T> | InjectionToken<T>, defaultValue?: any): Promise<T>;
 
 
     /**
@@ -126,7 +126,7 @@ export class StaticInjector implements Injector {
         this.recursivelyResolveProviders(providers);
     }
 
-    get<T>(token: Type<T> | InjectionToken<T>, defaultValue?: T): T {
+    get<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = _THROW_IF_NOT_FOUND): T {
 
         const record = this.records.get(token);
 
@@ -138,7 +138,7 @@ export class StaticInjector implements Injector {
      * @param token 
      * @param defaultValue 
      */
-    async getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
+    async getAsync<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = _THROW_IF_NOT_FOUND): Promise<T> {
 
         const record = this.records.get(token);
 
@@ -317,7 +317,7 @@ export class StaticInjector implements Injector {
                     this.recursivelyResolveProviders(provider[i]);
                 }
             }
-            // provider is a class
+            // provider is a type
             else if (typeof provider === 'function') {
 
                 let token = provider;
@@ -411,6 +411,12 @@ export class StaticInjector implements Injector {
 
             // start with ctor deps
             deps = GetInjectionTokens(provider);
+
+        }
+        else if ((provider as ClassProvider).type) {
+
+            // start with ctor deps
+            deps = GetInjectionTokens((provider as ClassProvider).type);
 
         }
         else if (provider_deps && provider_deps.length) {

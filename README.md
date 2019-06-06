@@ -1,6 +1,6 @@
 # UON CORE
 
-A modular application framework with dependency injection.
+A modular application framework with dependency injection. Based on @angular application structure.
 
 ## Usage
 ```shell
