@@ -218,9 +218,61 @@ export const StringUtils = {
 
         return result + (remainder_len ? padWith.substr(0, remainder_len) : '');
 
+    },
+
+    /**
+     * Compute the similarity of 2 strings using the cosine algorithm
+     * @param str1 
+     * @param str2 
+     */
+    similarity(str1: string, str2: string): number {
+
+        if (str1 === str2) return 1.0;
+        if (str1.length == 0 || str2.length == 0) return 0.0;
+
+        let v1 = SimilarityVector(str1);
+        let v2 = SimilarityVector(str2);
+
+        let dot = SimilarityDot(v1, v2);
+
+        let magnitude = SimilarityMag(v1) * SimilarityMag(v2);
+
+        return dot / magnitude;
     }
 
 };
+
+function SimilarityVector(str: string): { [k: string]: number } {
+
+    const res: { [k: string]: number } = {};
+
+    for (let i = 0; i < str.length; ++i) {
+        res[str[i]] = (res[str[i]] || 0) + 1;
+    }
+
+    return res;
+}
+
+function SimilarityDot(v1: { [k: string]: number }, v2: { [k: string]: number }) {
+    let product = 0;
+
+    for (let k in v1) {
+        product += v1[k] * (v2[k] || 0);
+    }
+
+    return product;
+}
+
+function SimilarityMag(v: { [k: string]: number }) {
+
+    let product = 0;
+
+    for (let k in v) {
+        product += v[k] * v[k];
+    }
+
+    return Math.sqrt(product);
+}
 
 
 const PATH_DELIMITER = '/';
