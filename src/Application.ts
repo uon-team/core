@@ -74,7 +74,7 @@ export class Application {
     }
 
     /**
-     * Get a list of all declaration defined in the module tree
+     * Get map of association between declaration -> ModuleRef
      */
     get declarations() {
         return this._declarations;
