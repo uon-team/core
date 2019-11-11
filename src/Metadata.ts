@@ -8,8 +8,8 @@ export const META_PROPERTIES = "uon:properties";
 export const META_MODULE = "uon:module";
 
 
-export interface TypeDecorator {
-    <T extends Type<any>>(type: T): T;
+export interface TypeDecorator<DT = any> {
+    <T extends Type<DT>>(type: T): T;
 }
 
 export interface ParamDecorator {
