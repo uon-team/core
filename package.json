@@ -3,6 +3,7 @@
   "version": "0.9.1",
   "description": "A library for structuring server and web applications",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "reflect-metadata": "^0.1.12"
   },
