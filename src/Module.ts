@@ -60,8 +60,9 @@ export interface Module {
     imports?: Array<Type<any> | ModuleWithProviders>;
 
     /**
-     * Application level providers.
-     * Providers declared here are available application-wide
+     * Module level providers.
+     * Providers declared here are available in this
+     * module's parent injector
      */
     providers?: Provider[];
 
