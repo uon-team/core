@@ -1,6 +1,5 @@
 
 
-import 'reflect-metadata';
 import { Type } from './Type';
 import { Module, ModuleRef, ModuleWithProviders } from './Module';
 import { Injector } from './Injector';

@@ -7,12 +7,6 @@ A modular application framework with dependency injection. Based on @angular app
 npm i @uon/core
 ```
 
-## Application Structure
-
-An application built with @uon/core is structured similarly to an @angular application.
-
-Modules are instanciated only once regardless of how many times it is imported in the application. However, you can also import a ModuleWithProviders which is not affected by that rule.
-
 ### Modules
 
 Application modules are defined with the @Module decorator.
@@ -30,7 +24,7 @@ export class MyModule {}
 
 ### Providers
 
-Declaring a list of providers make them available to the dependency injector. Unlike @angular, providers declared in any imported module makes them available in the root injector (application-wide).
+Declaring a list of providers make them available to the dependency injector.
 
 Providers are referenced my their token. A token can be any comparable value; however, for code minification purposes, we recommend using either an InjectionToken or a type (class).
 

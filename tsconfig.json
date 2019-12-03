@@ -10,6 +10,7 @@
         "outDir": "dist/",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "importHelpers": true,
         "lib": [
             "es2015"
         ]

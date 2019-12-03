@@ -6,6 +6,8 @@ MIT Licensed
 *********************************************************************************
 */
 
+import 'reflect-metadata';
+
 export * from './Application';
 export * from './EventSource';
 export * from './Injectable';
