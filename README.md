@@ -7,7 +7,6 @@ A modular application framework with dependency injection. Based on @angular app
 npm i @uon/core
 ```
 
-
 ### Modules
 
 Application modules are defined with the @Module decorator.
@@ -26,7 +25,6 @@ export class MyModule {}
 ### Providers
 
 Declaring a list of providers make them available to the dependency injector.
-More specifically in the module's parent injector.
 
 Providers are referenced my their token. A token can be any comparable value; however, for code minification purposes, we recommend using either an InjectionToken or a type (class).
 

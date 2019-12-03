@@ -1,6 +1,6 @@
 
 
-import 'reflect-metadata';
+
 import { Type } from './Type';
 import { MakeUnique } from './Unique';
 import {
