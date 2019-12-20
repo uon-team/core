@@ -197,48 +197,6 @@ export class Application {
     }
 
 
-    static RecursivelyGetModuleDeclarations(moduleType: Type<any> | ModuleWithProviders, out: any[]) {
-
-
-        let module_type: Type<any> = (moduleType as ModuleWithProviders).module || (moduleType as Type<any>);
-        let mod: Module = GetTypeMetadata(module_type).find(m => m instanceof Module);
-
-        if (!mod) {
-            throw new Error(`${module_type} was not decoratored with @Module()`)
-        }
-
-        let declarations: Type<any>[] = [];
-        let imports = mod.imports;
-
-
-        // if other providers were declared in the module metadata
-        if (mod.declarations && mod.declarations.length) {
-            declarations = declarations.concat(mod.declarations);
-        }
-
-
-        // go thru all imports
-        if (imports && imports.length) {
-            for (let j = 0; j < imports.length; ++j) {
-                this.RecursivelyGetModuleDeclarations(imports[j], out);
-            }
-        }
-
-        // finally add own declarations
-        if (declarations && declarations.length) {
-            for (let j = 0; j < declarations.length; ++j) {
-                if (out.indexOf(declarations[j]) === -1) {
-                    out.push(declarations[j])
-                }
-            }
-        }
-
-
-
-    }
-
-
-
     /**
      * Creates an application with the main module
      * @param module The startup module for the application
