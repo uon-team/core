@@ -175,7 +175,7 @@ export const StringUtils = {
      * Pad a string or number from the left side.
      * If {padWith} length does not execatly fit it is sliced from the back.
      * @param val 
-     * @param maxLen Thelength of the resulting string
+     * @param maxLen The length of the resulting string
      * @param padWith The content to pad with, can be longer then 1 character
      */
     padLeft(val: number | string, maxLen: number, padWith: string) {
