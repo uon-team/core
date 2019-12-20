@@ -118,7 +118,7 @@ export class Application {
 
 
         if (!mod) {
-            throw new Error(`${module_type} was not decoratored with @Module()`)
+            throw new Error(`${module_type} was not decorated with @Module()`)
         }
 
         // create a module ref

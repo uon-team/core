@@ -31,7 +31,10 @@ Providers are referenced my their token. A token can be any comparable value; ho
 There are multiple ways of declaring a provider :
 
 ```typescript
-import { Module } from '@uon/core';
+import { Module, InjectionToken } from '@uon/core';
+
+export const MY_VALUE_PROVIDER = 
+    new InjectionToken<number>("MY_VALUE_PROVIDER");
 
 @Module({
     imports: [],
@@ -41,7 +44,7 @@ import { Module } from '@uon/core';
 
         // ValueProvider
         {
-            token: 'MY_VALUE_PROVIDER',
+            token: MY_VALUE_PROVIDER,
             value: 1234
         },
 
@@ -56,8 +59,8 @@ import { Module } from '@uon/core';
 
         // ClassProvider
         {
-            token: 'MY_CLASS_PROVIDER',
-            type: MyClass
+            token: MyClass,
+            type: MyOverrideClass
         }
     ]
 })
