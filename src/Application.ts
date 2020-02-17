@@ -8,10 +8,8 @@ import { InjectionToken } from './Injectable';
 import { Provider } from './Provider';
 
 // the token to use for async initialization
-export const APP_INITIALIZER = new InjectionToken<any>("Application async initializers");
+export const APP_INITIALIZER = new InjectionToken<any>("APP_INIT");
 
-
-declare var console: any;
 /**
  * The application class is used to start all dependent 
  * modules and their providers
@@ -19,17 +17,16 @@ declare var console: any;
 export class Application {
 
     /// the main module
-    private mainModuleClass: Type<any>;
+    private _main: Type<any>;
 
     /// the loaded modules map
-    //private _modules: Map<Type<any>, ModuleRef<any>> = new Map();
-    private _modules: ModuleRef<any>[] = [];
+    private _m: ModuleRef<any>[] = [];
 
     /// the primary (root) injector
-    private _injector: Injector;
+    private _i: Injector;
 
-    // declarations associations with ModuleRef
-    private _declarations: Map<Type<any>, ModuleRef<any>> = new Map();
+    /// declarations associations with ModuleRef
+    private _d: Map<Type<any>, ModuleRef<any>> = new Map();
 
 
     /**
@@ -38,7 +35,7 @@ export class Application {
      */
     constructor(startup: Type<any>) {
 
-        this.mainModuleClass = startup;
+        this._main = startup;
 
         // the root provider list, start with the default providers
         let providers: any[] = [{
@@ -48,13 +45,13 @@ export class Application {
 
 
         // create the root injector
-        this._injector = Injector.Create(providers);
+        this._i = Injector.Create(providers);
 
         // get providers form main module
-        let mod: Module = GetTypeMetadata(this.mainModuleClass).find(m => m instanceof Module);
+        let mod: Module = GetTypeMetadata(this._main).find(m => m instanceof Module);
 
         // finally load all modules
-        this.recursivelyLoadModules(this.mainModuleClass, this._injector, mod.providers);
+        this._rlm(this._main, this._i, mod.providers);
 
     }
 
@@ -62,21 +59,21 @@ export class Application {
      * Get a map of all module refs loaded
      */
     get modules() {
-        return this._modules;
+        return this._m;
     }
 
     /**
      * Get the entrypoint module type
      */
-    get mainModuleType() {
-        return this.mainModuleClass;
+    get main() {
+        return this._main;
     }
 
     /**
      * Get map of association between declaration -> ModuleRef
      */
     get declarations() {
-        return this._declarations;
+        return this._d;
     }
 
     /**
@@ -85,9 +82,9 @@ export class Application {
     async start(): Promise<boolean> {
 
         // instanciate modules
-        for (let i = 0; i < this._modules.length; ++i) {
+        for (let i = 0; i < this._m.length; ++i) {
 
-            let ref = this._modules[i];
+            let ref = this._m[i];
 
             const initializers = ref.injector.get(APP_INITIALIZER, []);
 
@@ -110,7 +107,7 @@ export class Application {
      * Load all modules recursively
      * @param type 
      */
-    private recursivelyLoadModules(type: Type<any> | ModuleWithProviders, parentInjector: Injector, initialProviders: Provider[] = []) {
+    private _rlm(type: Type<any> | ModuleWithProviders, parentInjector: Injector, initialProviders: Provider[] = []) {
 
         // get module's meta data
         let module_type: Type<any> = (type as ModuleWithProviders).module || (type as Type<any>);
@@ -169,19 +166,19 @@ export class Application {
         ref.injector = injector;
 
         // add to module list
-        this._modules.push(ref);
+        this._m.push(ref);
 
         if(mod.declarations && mod.declarations.length) {
 
             for (let i = 0; i < mod.declarations.length; i++) {
                 const decl = mod.declarations[i];
 
-                const at_module = this._declarations.get(decl);
+                const at_module = this._d.get(decl);
                 if(at_module) {
                     throw new Error(`Cannot redeclare ${decl.name} in module ${module_type}, it is already declared in module ${at_module.type.name} `)
                 }
 
-                this._declarations.set(decl, ref);
+                this._d.set(decl, ref);
             }
         }
 
@@ -189,7 +186,7 @@ export class Application {
         // load imported modules
         if (mod.imports && mod.imports.length) {
             mod.imports.forEach((m) => {
-                this.recursivelyLoadModules(m, injector);
+                this._rlm(m, injector);
             });
         }
 
