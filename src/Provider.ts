@@ -30,6 +30,19 @@ export interface ClassProvider {
 }
 
 /**
+ * Provides an existing provider with a diffent token
+ */
+export interface AliasProvider {
+
+    token: any;
+
+    use: Type<any>;
+
+    multi?: boolean;
+
+}
+
+/**
  * Provides a factory called by the injector
  */
 export interface FactoryProvider {
@@ -52,7 +65,7 @@ export interface TypeProvider extends Type<any> { }
 /**
  * The Provider type describes the ways a provider can be defined
  */
-export type Provider = TypeProvider | ValueProvider | ClassProvider | FactoryProvider;
+export type Provider = TypeProvider | ValueProvider | ClassProvider | AliasProvider | FactoryProvider;
 
 
 /**
