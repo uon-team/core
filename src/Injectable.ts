@@ -127,3 +127,18 @@ export const Optional: OptionalDecorator =
         MakeParameterDecorator('Optional'));
 
 
+
+/**
+ * SelfDecorator
+ */
+export interface SelfDecorator {
+    (): ParamDecorator;
+    new(): any;
+}
+
+/**
+ * Limit the provider search to the local injector only, no parents
+ */
+export const Self: SelfDecorator =
+    MakeUnique("@uon/core/Self",
+        MakeParameterDecorator('Self'));
