@@ -16,16 +16,16 @@ export const APP_INITIALIZER = new InjectionToken<any>("APP_INIT");
  */
 export class Application {
 
-    /// the main module
+    /** The main module */
     private _main: Type<any>;
 
-    /// the loaded modules map
+    /** Flat list of loaded module */
     private _m: ModuleRef<any>[] = [];
 
-    /// the primary (root) injector
+    /** The application's root injector */
     private _i: Injector;
 
-    /// declarations associations with ModuleRef
+    /** A map of types (declarations) linked to a loaded module */
     private _d: Map<Type<any>, ModuleRef<any>> = new Map();
 
 
@@ -42,7 +42,6 @@ export class Application {
             token: Application,
             value: this
         }];
-
 
         // create the root injector
         this._i = Injector.Create(providers);
