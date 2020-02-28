@@ -3,12 +3,11 @@
  */
 
 import { Type } from './Type'
-import { Provider, ValueProvider, FactoryProvider, ClassProvider } from './Provider';
-import { InjectionToken, Inject, Optional } from './Injectable';
-import { GetParametersMetadata } from './Metadata'
+import { Provider, ValueProvider, FactoryProvider, ClassProvider, AliasProvider } from './Provider';
+import { InjectionToken, Inject, Optional, Self } from './Injectable';
+import { GetParametersMetadata, GetMetadata } from './Metadata'
 
-const _THROW_IF_NOT_FOUND = new Object();
-export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
+export const THROW_IF_NOT_FOUND = Object.freeze({});
 
 const IDENTITY = (val: any) => { return val };
 const EMPTY_VALUE: any[] = [];
@@ -21,33 +20,33 @@ const MULTIPROVIDER_FUNC = function (): any[] { return Array.prototype.slice.cal
  */
 export class NullInjector implements Injector {
 
-    get(token: any, defaultValue: any = _THROW_IF_NOT_FOUND): any {
-        if (defaultValue === _THROW_IF_NOT_FOUND) {
+    get(token: any, defaultValue: any = THROW_IF_NOT_FOUND): any {
+        if (defaultValue === THROW_IF_NOT_FOUND) {
 
-            throw new Error(`NullInjectorError: No provider for ${token.name || token.toString()}!`);
+            throw new Error(`No provider for ${token.name || token.toString()}!`);
         }
         return defaultValue;
     }
 
-    async getAsync(token: any, defaultValue: any = _THROW_IF_NOT_FOUND) {
+    async getAsync(token: any, defaultValue: any = THROW_IF_NOT_FOUND) {
 
-        if (defaultValue === _THROW_IF_NOT_FOUND) {
-            return new Error(`NullInjectorError: No provider for ${token}!`);
+        if (defaultValue === THROW_IF_NOT_FOUND) {
+            return new Error(`No provider for ${token}!`);
         }
         return defaultValue;
 
     }
 
     instanciate(type: Type<any>): any {
-        throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
+        throw new Error(`Cannot instanciate on a NullInjector`);
     }
 
     async instanciateAsync<T>(type: Type<any>): Promise<any> {
-        throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
+        throw new Error(`Cannot instanciate on a NullInjector`);
     }
 
     async invokeAsync<T extends (...args: any[]) => any>(func: T): Promise<ReturnType<T>> {
-        throw new Error(`NullInjectorError: Cannot instanciate on a NullInjector`);
+        throw new Error(`Cannot invoke on a NullInjector`);
     }
 }
 
@@ -126,7 +125,7 @@ export class StaticInjector implements Injector {
         this.recursivelyResolveProviders(providers);
     }
 
-    get<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = _THROW_IF_NOT_FOUND): T {
+    get<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = THROW_IF_NOT_FOUND): T {
 
         const record = this.records.get(token);
 
@@ -138,7 +137,7 @@ export class StaticInjector implements Injector {
      * @param token 
      * @param defaultValue 
      */
-    async getAsync<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = _THROW_IF_NOT_FOUND): Promise<T> {
+    async getAsync<T>(token: Type<T> | InjectionToken<T>, defaultValue: any = THROW_IF_NOT_FOUND): Promise<T> {
 
         const record = this.records.get(token);
 
@@ -197,13 +196,11 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private resolveToken(token: any, record: InjectionRecord, defaultValue: any): any {
-
-        let value;
+    private resolveToken(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): any {
 
         if (record) {
 
-            value = record.value;
+            let value = record.value;
 
             if (value == CIRCULAR_VALUE) {
                 throw new Error("Circular dependency");
@@ -228,6 +225,7 @@ export class StaticInjector implements Injector {
                             dep_record.token,
                             child_rec,
                             dep_record.optional ? null : THROW_IF_NOT_FOUND,
+                            dep_record.self
                         );
 
 
@@ -236,18 +234,21 @@ export class StaticInjector implements Injector {
                     }
 
                 }
-                record.value = value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
 
+                record.value = value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
 
             }
 
+            return record.value;
+
+        }
+        else if (selfOnly !== true) {
+            // check parent
+            return this.parent.get(token, defaultValue);
         }
         else {
-            // check parent
-            value = this.parent.get(token, defaultValue);
+            return Injector.NULL.get(token, defaultValue);
         }
-
-        return value;
 
     }
 
@@ -257,7 +258,7 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private async resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any): Promise<any> {
+    private async resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): Promise<any> {
 
         if (record) {
 
@@ -285,6 +286,7 @@ export class StaticInjector implements Injector {
                             dep_record.token,
                             child_rec,
                             dep_record.optional ? null : THROW_IF_NOT_FOUND,
+                            dep_record.self
                         );
 
                         deps.push(resolved_dep);
@@ -293,16 +295,19 @@ export class StaticInjector implements Injector {
 
                 }
 
-                let value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
+                value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
                 record.value = value;
             }
 
             return record.value;
 
         }
-        else {
+        else if (selfOnly !== true) {
             // check parent
             return this.parent.getAsync(token, defaultValue);
+        }
+        else {
+            return Injector.NULL.getAsync(token, defaultValue);
         }
 
     }
@@ -336,7 +341,7 @@ export class StaticInjector implements Injector {
                     let multi_provider = this.records.get(token);
                     if (multi_provider) {
                         if (multi_provider.func !== MULTIPROVIDER_FUNC) {
-                            throw new Error('Multi-provider mix up');
+                            throw new Error('Multi-provider error');
                         }
                     }
                     else {
@@ -356,7 +361,7 @@ export class StaticInjector implements Injector {
 
                 const record = this.records.get(token);
                 if (record && record.func === MULTIPROVIDER_FUNC) {
-                    throw new Error('Multi-provider mix up');
+                    throw new Error('Multi-provider error');
                 }
 
                 this.records.set(token, resolved);
@@ -393,8 +398,12 @@ export class StaticInjector implements Injector {
             func = (provider as ClassProvider).type;
             instanciate = true;
         }
+        else if ((provider as AliasProvider).use) {
+            func = () => { return this.get((provider as AliasProvider).use); };
+            instanciate = false;
+        }
         else {
-            throw new Error('Provider must be TypeProvider, ValueProvider, FactoryProvider or ClassProvider');
+            throw new Error('Not a Provider');
         }
 
         return { deps, func, value, instanciate };
@@ -447,6 +456,7 @@ interface InjectionRecord {
 export interface DependencyRecord {
     token: any;
     optional?: boolean;
+    self?: boolean;
 }
 
 /**
@@ -455,7 +465,7 @@ export interface DependencyRecord {
  */
 export function GetInjectionTokens(type: Type<any> | Function, key?: string): DependencyRecord[] {
 
-    let param_types = Reflect.getMetadata('design:paramtypes', type, key);
+    let param_types = GetMetadata('design:paramtypes', type, key);
     let params: any[] = GetParametersMetadata(type, key) || [];
 
     let result: DependencyRecord[] = [];
@@ -464,11 +474,15 @@ export function GetInjectionTokens(type: Type<any> | Function, key?: string): De
 
             let token = param_types[i];
             let optional = false;
+            let self = false;
             let annotations: any[] = params[i];
             if (annotations && annotations.length) {
                 for (let j = 0; j < annotations.length; ++j) {
                     if (annotations[j] instanceof Inject) {
                         token = annotations[j].token;
+                    }
+                    else if (annotations[j] instanceof Self) {
+                        self = true;
                     }
                     else if (annotations[j] instanceof Optional) {
                         optional = true;
@@ -476,7 +490,7 @@ export function GetInjectionTokens(type: Type<any> | Function, key?: string): De
                 }
             }
 
-            result.push({ token, optional });
+            result.push({ token, optional, self });
         }
     }
 
