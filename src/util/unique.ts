@@ -1,5 +1,4 @@
-import { GLOBAL } from "./Utils";
-
+import { GLOBAL } from "./global";
 
 
 /**

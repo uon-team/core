@@ -2,10 +2,10 @@
  * Some code borrowed from @angular/core. Distributed under the same license
  */
 
-import { Type } from './Type'
-import { Provider, ValueProvider, FactoryProvider, ClassProvider, AliasProvider } from './Provider';
-import { InjectionToken, Inject, Optional, Self } from './Injectable';
-import { GetParametersMetadata, GetMetadata } from './Metadata'
+import { Type } from '../util/type.utils';
+import { Provider, ValueProvider, FactoryProvider, ClassProvider, AliasProvider } from './provider';
+import { InjectionToken, Inject, Optional, Self } from './injectable';
+import { GetParametersMetadata, GetMetadata } from '../meta/meta.common';
 
 export const THROW_IF_NOT_FOUND = Object.freeze({});
 

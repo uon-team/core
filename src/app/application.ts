@@ -1,11 +1,11 @@
 
 
-import { Type } from './Type';
-import { Module, ModuleRef, ModuleWithProviders } from './Module';
-import { Injector } from './Injector';
-import { GetTypeMetadata } from './Metadata';
-import { InjectionToken } from './Injectable';
-import { Provider } from './Provider';
+import { Type } from '../util/type.utils';
+import { Module, ModuleRef, ModuleWithProviders } from './module';
+import { Injector } from '../di/injector';
+import { GetTypeMetadata } from '../meta/meta.common';
+import { InjectionToken } from '../di/injectable';
+import { Provider } from '../di/provider';
 
 // the token to use for async initialization
 export const APP_INITIALIZER = new InjectionToken<any>("APP_INIT");
@@ -174,7 +174,7 @@ export class Application {
 
                 const at_module = this._d.get(decl);
                 if(at_module) {
-                    throw new Error(`Cannot redeclare ${decl.name} in module ${module_type}, it is already declared in module ${at_module.type.name} `)
+                    throw new Error(`Cannot redeclare ${decl.name} in module ${module_type}, it is already declared in module ${at_module.type.name}`)
                 }
 
                 this._d.set(decl, ref);

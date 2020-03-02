@@ -1,13 +1,13 @@
 
-declare var global: any;
-declare var self: any;
 
-/**
- * Reference to the global object, either window or global
- */
-export const GLOBAL = (typeof self === 'object' && self.self === self && self) ||
-    (typeof global === 'object' && global.global === global && global) ||
-    this;
+export const Type = Function;
+
+export function IsType(v: any): v is Type<any> {
+    return typeof v === 'function';
+}
+
+export interface Type<T> extends Function { new(...args: any[]): T; }
+
 
 /**
  * Get the array element type

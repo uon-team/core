@@ -23,9 +23,7 @@ export class EventSource {
     /**
      * 
      */
-    constructor() {
-
-    }
+    constructor() {}
 
     /**
      * Attach an event listener

@@ -1,8 +1,6 @@
-
-
-import { Type } from './Type';
-import { InjectionToken } from './Injectable';
-import { Injector } from './Injector';
+import { Type } from '../util/type.utils';
+import { InjectionToken } from './injectable';
+import { Injector } from './injector';
 
 /**
  * Provides a static value

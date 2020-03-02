@@ -1,16 +1,9 @@
+import { Type } from '../util/type.utils';
+import { MakeUnique } from '../util/unique';
+import { GetMetadata, GetTypeMetadata } from '../meta/meta.common';
+import { TypeDecorator, MakeTypeDecorator } from '../meta/type.decorator';
+import { ParamDecorator, MakeParameterDecorator } from '../meta/param.decorator';
 
-
-
-import { Type } from './Type';
-import { MakeUnique } from './Unique';
-import {
-    ParamDecorator,
-    TypeDecorator,
-    MakeParameterDecorator,
-    MakeTypeDecorator,
-    GetMetadata,
-    GetTypeMetadata
-} from './Metadata';
 
 /**
  * Use InjectionToken as unique symbol
@@ -81,7 +74,6 @@ export function IsInjectable(type: Type<any>) {
  * InjectDecorator
  */
 export interface InjectDecorator {
-
     (token: any): ParamDecorator;
     new(token: any): Inject;
 }

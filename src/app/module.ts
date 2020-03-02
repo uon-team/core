@@ -1,10 +1,10 @@
 
 
-import { Type } from './Type';
-import { Provider } from './Provider';
-import { Injector } from './Injector';
-import { TypeDecorator, MakeTypeDecorator } from './Metadata';
-import { MakeUnique } from './Unique';
+import { Type } from '../util/type.utils';
+import { Provider } from '../di/provider';
+import { Injector } from '../di/injector';
+import { TypeDecorator, MakeTypeDecorator } from '../meta/type.decorator';
+import { MakeUnique } from '../util/unique';
 
 /**
  * A ModuleRef represents a Module instanciation
