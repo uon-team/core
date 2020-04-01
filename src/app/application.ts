@@ -78,7 +78,9 @@ export class Application {
     /**
      * Start the application
      */
-    async start(): Promise<boolean> {
+    async start(): Promise<ModuleRef<any>> {
+
+        let main_ref: ModuleRef<any> = null;
 
         // instanciate modules
         for (let i = 0; i < this._m.length; ++i) {
@@ -96,9 +98,14 @@ export class Application {
             let instance = ref.injector.instanciate(ref.type);
             ref.instance = instance;
 
+
+            if(ref.type === this._main) {
+                main_ref = ref;
+            }
+
         }
 
-        return true;
+        return main_ref;
     }
 
 
