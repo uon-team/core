@@ -2,7 +2,7 @@
  * Some code borrowed from @angular/core. Distributed under the same license
  */
 
-import { Type } from '../util/type.utils';
+import { Type, IsFunction, IsObject } from '../util/type.utils';
 import { Provider, ValueProvider, FactoryProvider, ClassProvider, AliasProvider } from './provider';
 import { InjectionToken, Inject, Optional, Self } from './injectable';
 import { GetParametersMetadata, GetMetadata } from '../meta/meta.common';
@@ -202,7 +202,7 @@ export class StaticInjector implements Injector {
 
             let value = record.value;
 
-            if (value == CIRCULAR_VALUE) {
+            if (value === CIRCULAR_VALUE) {
                 throw new Error("Circular dependency");
             }
             else if (value === EMPTY_VALUE) {
@@ -235,7 +235,9 @@ export class StaticInjector implements Injector {
 
                 }
 
-                record.value = value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
+                record.value = value = instanciate
+                    ? new (func as any)(...deps)
+                    : func.apply(obj, deps);
 
             }
 
@@ -295,8 +297,9 @@ export class StaticInjector implements Injector {
 
                 }
 
-                value = instanciate ? new (func as any)(...deps) : func.apply(obj, deps);
-                record.value = value;
+                record.value = instanciate
+                    ? new (func as any)(...deps)
+                    : func.apply(obj, deps);
             }
 
             return record.value;
@@ -323,7 +326,7 @@ export class StaticInjector implements Injector {
                 }
             }
             // provider is a type
-            else if (typeof provider === 'function') {
+            else if (IsFunction(provider)) {
 
                 let token = provider;
                 const resolved = this.resolveProvider(provider);
@@ -332,7 +335,7 @@ export class StaticInjector implements Injector {
 
             }
             // provider is an object
-            else if (typeof provider === 'object' && provider.token) {
+            else if (IsObject(provider) && provider.token) {
 
                 let token = provider.token;
                 const resolved = this.resolveProvider(provider);
@@ -384,7 +387,7 @@ export class StaticInjector implements Injector {
         let instanciate: boolean = false;
         let async: boolean = false;
 
-        if (typeof provider === 'function') {
+        if (IsFunction(provider)) {
             func = provider;
             instanciate = true;
         }
@@ -416,7 +419,7 @@ export class StaticInjector implements Injector {
 
         const provider_deps: any[] = (provider as FactoryProvider & ClassProvider).deps;
 
-        if (typeof provider === 'function') {
+        if (IsFunction(provider)) {
 
             // start with ctor deps
             deps = GetInjectionTokens(provider);
