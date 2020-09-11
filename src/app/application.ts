@@ -38,7 +38,7 @@ export class Application {
         this._main = startup;
 
         // the root provider list, start with the default providers
-        let providers: any[] = [{
+        const providers: any[] = [{
             token: Application,
             value: this
         }];
@@ -47,7 +47,7 @@ export class Application {
         this._i = Injector.Create(providers);
 
         // get providers form main module
-        let mod: Module = GetTypeMetadata(this._main).find(m => m instanceof Module);
+        const mod: Module = GetTypeMetadata(this._main).find(m => m instanceof Module);
 
         // finally load all modules
         this._rlm(this._main, this._i, mod.providers);
