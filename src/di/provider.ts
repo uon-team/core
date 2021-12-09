@@ -77,11 +77,11 @@ export function ProvideInjectable<T>(token: InjectionToken<T>, type: Type<T>, mu
 
     return {
         token,
-        multi,
         factory: (i: Injector) => {
             return i.instanciate(type);
         },
-        deps: [Injector]
+        deps: [Injector],
+        multi
     };
 
 }

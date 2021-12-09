@@ -89,7 +89,7 @@ export const Inject: InjectDecorator =
             null,
             (cls: any, meta: Inject, index: number) => {
                 if (!meta.token) {
-                    meta.token = GetMetadata('design:paramtypes', cls)[index];
+                    meta.token = (GetMetadata('design:paramtypes', cls) as any[])[index];
                 }
             }
         ));

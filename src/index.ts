@@ -6,7 +6,7 @@ MIT Licensed
 *********************************************************************************
 */
 
-import 'reflect-metadata';
+import './meta/reflect.polyfill';
 
 export * from './app/application';
 export * from './app/module';
@@ -24,4 +24,5 @@ export * from './util/global';
 export * from './util/unique';
 export * from './util/type.utils';
 export * from './util/event-source';
+export * from './util/deferred';
 

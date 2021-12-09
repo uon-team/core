@@ -43,7 +43,7 @@ export function GetMetadata(metadataKey: string, obj: any, key?: string | symbol
  * @param proto 
  */
 export function GetPropertiesMetadata(proto: any): { [k: string]: any[] } {
-    return GetMetadata(META_PROPERTIES, proto) || {};
+    return GetMetadata(META_PROPERTIES, proto) as { [k: string]: any[] } || {};
 }
 
 /**
@@ -51,7 +51,7 @@ export function GetPropertiesMetadata(proto: any): { [k: string]: any[] } {
  * @param type 
  */
 export function GetTypeMetadata<T>(type: Type<T>): any[] {
-    return GetMetadata(META_ANNOTATIONS, type) || [];
+    return GetMetadata(META_ANNOTATIONS, type) as any[] || [];
 }
 
 /**
@@ -59,7 +59,7 @@ export function GetTypeMetadata<T>(type: Type<T>): any[] {
  * @param proto 
  */
 export function GetParametersMetadata(type: Function, key?: string): any[] {
-    return GetMetadata(META_PARAMETERS, type, key) || [];
+    return GetMetadata(META_PARAMETERS, type, key) as any[] || [];
 }
 
 /**
@@ -70,7 +70,7 @@ export function GetParametersMetadata(type: Function, key?: string): any[] {
  */
 export function FindMetadataOfType<T>(metadataKey: string, obj: any, type: Type<T>): T {
 
-    const data = GetMetadata(metadataKey, obj);
+    const data = GetMetadata(metadataKey, obj) as any [];
 
     if (!data || !data.length) {
         return null;

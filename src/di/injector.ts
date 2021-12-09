@@ -252,7 +252,7 @@ export class StaticInjector implements Injector {
             return Injector.NULL.get(token, defaultValue);
         }
 
-    }
+    } 
 
     /**
      * 
@@ -468,7 +468,7 @@ export interface DependencyRecord {
  */
 export function GetInjectionTokens(type: Type<any> | Function, key?: string): DependencyRecord[] {
 
-    let param_types = GetMetadata('design:paramtypes', type, key);
+    let param_types: any[] = GetMetadata('design:paramtypes', type, key) as any[];
     let params: any[] = GetParametersMetadata(type, key) || [];
 
     let result: DependencyRecord[] = [];
