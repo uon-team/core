@@ -38,10 +38,12 @@ export class Application {
         this._main = startup;
 
         // the root provider list, start with the default providers
-        const providers: any[] = [{
-            token: Application,
-            value: this
-        }];
+        const providers: any[] = [
+            {
+                token: Application,
+                value: this
+            }
+        ];
 
         // create the root injector
         this._i = Injector.Create(providers);
@@ -88,23 +90,20 @@ export class Application {
             let ref = this._m[i];
 
             const initializers = ref.injector.get(APP_INITIALIZER, []);
-
-            // chain initializers
             for (let i = 0; i < initializers.length; ++i) {
                 await initializers[i];
             }
 
             // create the module instance
-            let instance = ref.injector.instanciate(ref.type);
+            let instance = await ref.injector.instanciateAsync(ref.type);
             ref.instance = instance;
 
 
-            if(ref.type === this._main) {
+            if (ref.type === this._main) {
                 main_ref = ref;
             }
 
         }
-
         return main_ref;
     }
 
@@ -174,13 +173,13 @@ export class Application {
         // add to module list
         this._m.push(ref);
 
-        if(mod.declarations && mod.declarations.length) {
+        if (mod.declarations && mod.declarations.length) {
 
             for (let i = 0; i < mod.declarations.length; i++) {
                 const decl = mod.declarations[i];
 
                 const at_module = this._d.get(decl);
-                if(at_module) {
+                if (at_module) {
                     throw new Error(`Cannot redeclare ${decl.name} in module ${module_type}, it is already declared in module ${at_module.type.name}`)
                 }
 
