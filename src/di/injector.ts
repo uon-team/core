@@ -203,7 +203,14 @@ export class StaticInjector implements Injector {
             let value = record.value;
 
             if (value === CIRCULAR_VALUE) {
-                throw new Error("Circular dependency");
+
+                let type_name: string = 'unknown';
+
+                if(record.instanciate) {
+                    type_name = record.func.name;
+                }
+
+                throw new Error(`Circular dependency with provider ${token} -> ${type_name}`);
             }
             else if (value === EMPTY_VALUE) {
 
@@ -267,7 +274,13 @@ export class StaticInjector implements Injector {
             let value = record.value;
 
             if (value == CIRCULAR_VALUE) {
-                throw new Error("Circular dependency");
+                let type_name: string = 'unknown';
+
+                if(record.instanciate) {
+                    type_name = record.func.name;
+                }
+
+                throw new Error(`Circular dependency with provider ${token} -> ${type_name}`);
             }
             else if (value === EMPTY_VALUE) {
 

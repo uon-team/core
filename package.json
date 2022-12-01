@@ -1,15 +1,12 @@
 {
   "name": "@uon/core",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A library for structuring server and web applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "tslib": "^2.3.1"
+    "tslib": "^2.4.1"
   },
-  "peerDependencies": {
-  },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/uon-team/core.git"
