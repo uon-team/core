@@ -17,7 +17,7 @@ export const META_MODULE = "uon:module";
  */
 export function GetOrDefineMetadata(metadataKey: string, obj: any, key: string | symbol = undefined, defaultValue: any = []): any {
 
-    let annotation: any = GetMetadata(metadataKey, obj, key);
+    let annotation: any = GetOwnMetadata(metadataKey, obj, key);
 
     if (!annotation) {
         annotation = defaultValue;
@@ -26,6 +26,7 @@ export function GetOrDefineMetadata(metadataKey: string, obj: any, key: string |
 
     return annotation;
 }
+
 
 
 /**
@@ -37,6 +38,10 @@ export function GetMetadata(metadataKey: string, obj: any, key?: string | symbol
     return Reflect.getMetadata(metadataKey, obj, key);
 }
 
+export function GetOwnMetadata(metadataKey: string, obj: any, key?: string | symbol) {
+    return Reflect.getOwnMetadata(metadataKey, obj, key);
+}
+
 
 /**
  * Retrieves decoration metadata for a given prototype 
@@ -44,6 +49,10 @@ export function GetMetadata(metadataKey: string, obj: any, key?: string | symbol
  */
 export function GetPropertiesMetadata(proto: any): { [k: string]: any[] } {
     return GetMetadata(META_PROPERTIES, proto) as { [k: string]: any[] } || {};
+}
+
+export function GetPropertiesOwnMetadata(proto: any): { [k: string]: any[] } {
+    return GetOwnMetadata(META_PROPERTIES, proto) as { [k: string]: any[] } || {};
 }
 
 /**
