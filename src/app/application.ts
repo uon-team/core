@@ -89,7 +89,7 @@ export class Application {
 
             let ref = this._m[i];
 
-            const initializers = ref.injector.get(APP_INITIALIZER, []);
+            const initializers = await ref.injector.getAsync(APP_INITIALIZER, []);
             for (let i = 0; i < initializers.length; ++i) {
                 await initializers[i];
             }
