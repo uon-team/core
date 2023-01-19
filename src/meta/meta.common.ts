@@ -64,6 +64,14 @@ export function GetTypeMetadata<T>(type: Type<T>): any[] {
 }
 
 /**
+ * Retrieves decoration metadata on a type
+ * @param type 
+ */
+ export function GetTypeOwnMetadata<T>(type: Type<T>): any[] {
+    return GetOwnMetadata(META_ANNOTATIONS, type) as any[] || [];
+}
+
+/**
  * Retrieves decoration metadata for a function's parameters
  * @param proto 
  */
