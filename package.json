@@ -1,10 +1,11 @@
 {
   "name": "@uon/core",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "A library for structuring server and web applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "reflect-metadata": "^0.1.13",
     "tslib": "^2.4.1"
   },
   "repository": {

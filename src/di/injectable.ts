@@ -1,5 +1,4 @@
 import { Type } from '../util/type.utils';
-import { MakeUnique } from '../util/unique';
 import { GetMetadata, GetTypeMetadata } from '../meta/meta.common';
 import { TypeDecorator, MakeTypeDecorator } from '../meta/type.decorator';
 import { ParamDecorator, MakeParameterDecorator } from '../meta/param.decorator';
@@ -29,15 +28,14 @@ export interface InjectableDecorator {
  * Annotates a type as injectable
  */
 export const Injectable: InjectableDecorator =
-    MakeUnique("@uon/core/Injectable",
-        MakeTypeDecorator(
+	MakeTypeDecorator(
             'Injectable', // name
             (token: any) => ({ token }), // properties
             null, // parent
             (cls: any, meta: any) => {
                 meta.token = GetMetadata('design:type', cls);
             }
-        ));
+        );
 
 /**
 * The Injectable interface
@@ -82,8 +80,7 @@ export interface InjectDecorator {
  * The Inject() parameter decorator
  */
 export const Inject: InjectDecorator =
-    MakeUnique("@uon/core/Inject",
-        MakeParameterDecorator(
+    MakeParameterDecorator(
             'Inject',
             (token: any) => ({ token }),
             null,
@@ -92,7 +89,7 @@ export const Inject: InjectDecorator =
                     meta.token = (GetMetadata('design:paramtypes', cls) as any[])[index];
                 }
             }
-        ));
+        );
 
 /**
 * The Inject interface
@@ -114,9 +111,7 @@ export interface OptionalDecorator {
 /**
  * Mark a parameter as optional
  */
-export const Optional: OptionalDecorator =
-    MakeUnique("@uon/core/Optional",
-        MakeParameterDecorator('Optional'));
+export const Optional: OptionalDecorator = MakeParameterDecorator('Optional');
 
 
 
@@ -131,6 +126,4 @@ export interface SelfDecorator {
 /**
  * Limit the provider search to the local injector only, no parents
  */
-export const Self: SelfDecorator =
-    MakeUnique("@uon/core/Self",
-        MakeParameterDecorator('Self'));
+export const Self: SelfDecorator = MakeParameterDecorator('Self');

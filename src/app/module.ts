@@ -4,7 +4,7 @@ import { Type } from '../util/type.utils';
 import { Provider } from '../di/provider';
 import { Injector } from '../di/injector';
 import { TypeDecorator, MakeTypeDecorator } from '../meta/type.decorator';
-import { MakeUnique } from '../util/unique';
+
 
 /**
  * A ModuleRef represents a Module instanciation
@@ -40,8 +40,7 @@ export interface ModuleDecorator {
  * Module decorator
  */
 export const Module: ModuleDecorator =
-    MakeUnique('@uon/core/Module',
-        MakeTypeDecorator('Module', (meta: Module) => meta));
+	MakeTypeDecorator('Module', (meta: Module) => meta);
 
 
 /**
