@@ -4,9 +4,8 @@ import assert from 'node:assert/strict';
 import { Application, APP_INITIALIZER } from './application';
 import { Module, ModuleRef } from './module';
 import { InjectionToken } from '../di/injectable';
-import { Injectable } from '../di/injectable';
 
-@(Module({ providers: [] }) as any)
+@Module({ providers: [] })
 class SimpleModule {}
 
 describe('Application', () => {
@@ -34,10 +33,10 @@ describe('Application', () => {
     });
 
     describe('imports', () => {
-        @(Module({ providers: [] }) as any)
+        @Module({ providers: [] })
         class ChildModule {}
 
-        @(Module({ imports: [ChildModule] }) as any)
+        @Module({ imports: [ChildModule] })
         class ParentModule {}
 
         test('imported modules are added to the modules list', () => {
@@ -47,7 +46,7 @@ describe('Application', () => {
         });
 
         test('throws on duplicate imports within the same module', () => {
-            @(Module({ imports: [ChildModule, ChildModule] }) as any)
+            @Module({ imports: [ChildModule, ChildModule] })
             class DupModule {}
 
             assert.throws(() => new Application(DupModule), /imported twice/);
@@ -58,7 +57,7 @@ describe('Application', () => {
         class DeclA {}
         class DeclB {}
 
-        @(Module({ declarations: [DeclA, DeclB] }) as any)
+        @Module({ declarations: [DeclA, DeclB] })
         class DeclModule {}
 
         test('declarations map is populated', () => {
@@ -76,10 +75,10 @@ describe('Application', () => {
         test('throws when a declaration is redeclared in another module', () => {
             class Shared {}
 
-            @(Module({ declarations: [Shared] }) as any)
+            @Module({ declarations: [Shared] })
             class ModA {}
 
-            @(Module({ imports: [ModA], declarations: [Shared] }) as any)
+            @Module({ imports: [ModA], declarations: [Shared] })
             class ModB {}
 
             assert.throws(() => new Application(ModB), /redeclare/);
@@ -89,7 +88,7 @@ describe('Application', () => {
     describe('providers', () => {
         const TOKEN = new InjectionToken<string>('APP_STR');
 
-        @(Module({ providers: [{ token: TOKEN, value: 'hello' }] }) as any)
+        @Module({ providers: [{ token: TOKEN, value: 'hello' }] })
         class ProviderModule {}
 
         test('module providers are available in the module injector', () => {
@@ -126,13 +125,13 @@ describe('Application', () => {
         test('APP_INITIALIZER callbacks are awaited before start resolves', async () => {
             let ran = false;
 
-            @(Module({
+            @Module({
                 providers: [{
                     token: APP_INITIALIZER,
                     value: (async () => { ran = true; })(),
                     multi: true,
                 }]
-            }) as any)
+            })
             class InitModule {}
 
             const app = new Application(InitModule);

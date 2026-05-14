@@ -12,12 +12,12 @@ describe('MakePropertyDecorator', () => {
 
     test('sets decoratorName on prototype', () => {
         const MyProp = MakePropertyDecorator('TestProp');
-        assert.equal((MyProp as any).prototype.decoratorName, 'TestProp');
+        assert.equal(MyProp.prototype.decoratorName, 'TestProp');
     });
 
     test('can be used with new to create instance', () => {
         const MyProp = MakePropertyDecorator('MyProp', (label: string) => ({ label }));
-        const instance = new (MyProp as any)('test');
+        const instance = new MyProp('test');
         assert.equal(instance.label, 'test');
     });
 
@@ -25,7 +25,7 @@ describe('MakePropertyDecorator', () => {
         const MyProp = MakePropertyDecorator('MyProp', (label: string) => ({ label }));
 
         class Target {
-            @(MyProp('myLabel') as any)
+            @MyProp('myLabel')
             myProp: string;
         }
 
@@ -39,8 +39,8 @@ describe('MakePropertyDecorator', () => {
         const DecB = MakePropertyDecorator('B', (v: string) => ({ v }));
 
         class Target {
-            @(DecB('b') as any)
-            @(DecA('a') as any)
+            @DecB('b')
+            @DecA('a')
             myProp: string;
         }
 
@@ -52,10 +52,10 @@ describe('MakePropertyDecorator', () => {
         const MyProp = MakePropertyDecorator('MyProp', (v: number) => ({ v }));
 
         class Target {
-            @(MyProp(1) as any)
+            @MyProp(1)
             first: string;
 
-            @(MyProp(2) as any)
+            @MyProp(2)
             second: string;
         }
 
@@ -71,7 +71,7 @@ describe('MakePropertyDecorator', () => {
         });
 
         class Target {
-            @(MyProp() as any)
+            @MyProp()
             hookProp: string;
         }
 
@@ -81,7 +81,7 @@ describe('MakePropertyDecorator', () => {
     test('inherits from parentClass when provided', () => {
         class Base {}
         const MyProp = MakePropertyDecorator('MyProp', undefined, Base);
-        const instance = new (MyProp as any)();
+        const instance = new MyProp();
         assert.equal(instance instanceof Base, true);
     });
 });

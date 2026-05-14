@@ -26,9 +26,9 @@ describe('MakeParameterDecorator', () => {
 
         class Target {
             constructor(
-                @(MyParam('first') as any) a: string,
+                @MyParam('first') a: string,
                 b: number,
-                @(MyParam('third') as any) c: boolean
+                @MyParam('third') c: boolean
             ) {}
         }
 
@@ -46,8 +46,8 @@ describe('MakeParameterDecorator', () => {
 
         class Target {
             constructor(
-                @(DecB('b') as any)
-                @(DecA('a') as any)
+                @DecB('b')
+                @DecA('a')
                 x: string
             ) {}
         }
@@ -63,7 +63,7 @@ describe('MakeParameterDecorator', () => {
         });
 
         class Target {
-            constructor(@(MyParam() as any) x: string) {}
+            constructor(@MyParam() x: string) {}
         }
 
         assert.equal(hookIdx, 0);
@@ -72,7 +72,7 @@ describe('MakeParameterDecorator', () => {
     test('inherits from parentClass when provided', () => {
         class Base {}
         const MyParam = MakeParameterDecorator('MyParam', undefined, Base);
-        const instance = new (MyParam as any)();
+        const instance = new MyParam();
         assert.equal(instance instanceof Base, true);
     });
 });

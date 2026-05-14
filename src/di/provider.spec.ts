@@ -36,7 +36,7 @@ describe('ProvideInjectable', () => {
     test('creates a FactoryProvider using the injector', () => {
         const TOKEN = new InjectionToken<any>('PI');
 
-        @(Injectable() as any)
+        @Injectable()
         class Svc {}
 
         const p = ProvideInjectable(TOKEN, Svc) as any;
@@ -47,7 +47,7 @@ describe('ProvideInjectable', () => {
     test('multi defaults to false', () => {
         const TOKEN = new InjectionToken<any>('PI2');
 
-        @(Injectable() as any)
+        @Injectable()
         class Svc {}
 
         const p = ProvideInjectable(TOKEN, Svc) as any;
@@ -57,7 +57,7 @@ describe('ProvideInjectable', () => {
     test('provider resolves instance via injector', () => {
         const TOKEN = new InjectionToken<any>('PI_INJ');
 
-        @(Injectable() as any)
+        @Injectable()
         class Svc {}
 
         const inj = Injector.Create([Svc, ProvideInjectable(TOKEN, Svc)]);
@@ -68,7 +68,7 @@ describe('ProvideInjectable', () => {
     test('multi can be set to true', () => {
         const TOKEN = new InjectionToken<any>('PI3');
 
-        @(Injectable() as any)
+        @Injectable()
         class Svc {}
 
         const p = ProvideInjectable(TOKEN, Svc, true) as any;

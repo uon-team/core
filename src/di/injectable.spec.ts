@@ -55,7 +55,7 @@ describe('Inject decorator', () => {
         const TOKEN = new InjectionToken<string>('STR');
 
         class Target {
-            constructor(@(Inject(TOKEN) as any) value: string) {}
+            constructor(@Inject(TOKEN) value: string) {}
         }
 
         const params = GetParametersMetadata(Target);
@@ -75,7 +75,7 @@ describe('Inject decorator', () => {
 describe('Optional decorator', () => {
     test('stores Optional metadata at parameter index', () => {
         class Target {
-            constructor(@(Optional() as any) x: string) {}
+            constructor(@Optional() x: string) {}
         }
 
         const params = GetParametersMetadata(Target);
@@ -88,7 +88,7 @@ describe('Optional decorator', () => {
 describe('Self decorator', () => {
     test('stores Self metadata at parameter index', () => {
         class Target {
-            constructor(@(Self() as any) x: string) {}
+            constructor(@Self() x: string) {}
         }
 
         const params = GetParametersMetadata(Target);

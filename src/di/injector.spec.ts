@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { Injector, StaticInjector, NullInjector, GetInjectionTokens } from './injector';
+import { Injector, GetInjectionTokens } from './injector';
 import { InjectionToken, Injectable, Inject, Optional, Self } from './injectable';
 
 describe('NullInjector', () => {
@@ -267,7 +267,7 @@ describe('GetInjectionTokens', () => {
         const TOKEN = new InjectionToken<string>('X');
 
         class Consumer {
-            constructor(@(Inject(TOKEN) as any) public val: string) {}
+            constructor(@Inject(TOKEN) public val: string) {}
         }
 
         const tokens = GetInjectionTokens(Consumer);
@@ -279,7 +279,7 @@ describe('GetInjectionTokens', () => {
 
         class Consumer {
             constructor(
-                @(Inject(TOKEN) as any) @(Optional() as any) public val: string
+                @Inject(TOKEN) @Optional() public val: string
             ) {}
         }
 
@@ -292,7 +292,7 @@ describe('GetInjectionTokens', () => {
         class Dep {}
 
         class Consumer {
-            constructor(@(Self() as any) public dep: Dep) {}
+            constructor(@Self() public dep: Dep) {}
         }
 
         const tokens = GetInjectionTokens(Consumer);

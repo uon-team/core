@@ -74,7 +74,8 @@ export function ProvideInjectable<T>(token: InjectionToken<T>, type: Type<T>, mu
 /**
  * Utility function for providing a static value
  * @param token 
- * @param value 
+ * @param value
+ * @param multi whether this is a multi provider
  */
 export function ProvideValue<T>(token: InjectionToken<T>, value: T, multi: boolean = false): Provider {
     return {
