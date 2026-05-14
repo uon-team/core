@@ -2,60 +2,45 @@ import { Type } from '../util/type.utils';
 import { InjectionToken } from './injectable';
 import { Injector } from './injector';
 
+
+export interface BaseProvider {
+
+	token: any;
+
+	multi?: boolean;
+}
+
 /**
  * Provides a static value
  */
-export interface ValueProvider {
-
-    token: any;
-
+export interface ValueProvider extends BaseProvider {
     value: any;
-
-    multi?: boolean;
 }
 
 /**
  * Provides a class type for instanciation by injector
  */
-export interface ClassProvider {
-
-    token: any;
-
+export interface ClassProvider extends BaseProvider {
     type: Type<any>;
-
-    multi?: boolean;
-
 }
 
 /**
- * Provides an existing provider with a diffent token
+ * Provides an existing provider with a different token
  */
-export interface AliasProvider {
-
-    token: any;
-
+export interface AliasProvider extends BaseProvider {
     use: Type<any>;
-
-    multi?: boolean;
-
 }
 
 /**
  * Provides a factory called by the injector
  */
-export interface FactoryProvider {
-
-    token: any;
-
+export interface FactoryProvider extends BaseProvider {
     factory: Function;
-
     deps?: any[];
-
-    multi?: boolean;
 }
 
 /**
- * Provides a type to be instanciated by the injector 
+ * Provides a type to be instantiated by the injector
  * using the type itself as the token
  */
 export interface TypeProvider extends Type<any> { }
@@ -70,7 +55,7 @@ export type Provider = TypeProvider | ValueProvider | ClassProvider | AliasProvi
  * Utility function for providing a dependency-injected 
  * class instance for a given token
  * @param token the token for which to provide
- * @param type the type to instanciate
+ * @param type the type to instantiate
  * @param multi whether this is a multi provider
  */
 export function ProvideInjectable<T>(token: InjectionToken<T>, type: Type<T>, multi: boolean = false): Provider {
