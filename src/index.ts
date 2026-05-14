@@ -1,12 +1,10 @@
 /*!
 *******************************************************************************
 @uon/core
-Copyright (C) 2020 uon-team <g@uon.io>
+Copyright (C) 2026 uon-team <g@uon.io>
 MIT Licensed
 *********************************************************************************
 */
-
-//import './meta/reflect.polyfill';
 
 import 'reflect-metadata';
 
