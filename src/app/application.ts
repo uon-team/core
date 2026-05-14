@@ -71,7 +71,7 @@ export class Application {
     }
 
     /**
-     * Get map of association between declaration -> ModuleRef
+     * Get a map of the association between declaration -> ModuleRef
      */
     get declarations() {
         return this._d;
@@ -84,7 +84,7 @@ export class Application {
 
         let main_ref: ModuleRef<any> = null;
 
-        // instanciate modules
+        // instantiate modules
         for (let i = 0; i < this._m.length; ++i) {
 
             let ref = this._m[i];
@@ -104,6 +104,15 @@ export class Application {
             }
 
         }
+
+        // check for onStart() on main module
+        if (main_ref) {
+            const mainInstance = main_ref.instance;
+            if (mainInstance && typeof mainInstance.onStart === 'function') {
+                await mainInstance.onStart();
+            }
+        }
+
         return main_ref;
     }
 
@@ -114,7 +123,7 @@ export class Application {
      */
     private _rlm(type: Type<any> | ModuleWithProviders, parentInjector: Injector, initialProviders: Provider[] = []) {
 
-        // get module's meta data
+        // get module's metadata
         let module_type: Type<any> = (type as ModuleWithProviders).module || (type as Type<any>);
         let mod: Module = GetTypeMetadata(module_type).find(m => m instanceof Module);
 
@@ -124,10 +133,9 @@ export class Application {
         }
 
         // create a module ref
-        const ref = <ModuleRef<any>>({
-            module: mod,
-            type: module_type
-        });
+        const ref = new ModuleRef<any>();
+        ref.module = mod;
+        ref.type = module_type;
 
 
         let providers: Provider[] = initialProviders
@@ -145,7 +153,7 @@ export class Application {
 
                 // check for duplicates
                 if (loaded_imports.indexOf(module_type) > -1) {
-                    throw new Error(`${module_type} is imported twice in the same module. If you must import this module twice, move the second occurence to another module.`)
+                    throw new Error(`${module_type} is imported twice in the same module. If you must import this module twice, move the second occurrence to another module.`)
                 }
 
                 loaded_imports.push(module_type)
