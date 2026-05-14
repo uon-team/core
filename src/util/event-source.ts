@@ -13,7 +13,7 @@ type EventMap = { [k: string]: EventContainer[] };
 
 
 /**
- * An async event emiter implementation, 
+ * An async event emitter implementation,
  * When emit is called, all listeners are executed sequentially
  */
 export class EventSource {
