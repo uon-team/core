@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
-        "moduleResolution": "node",
-        "module": "commonjs",
-        "target": "es2015",
+        "moduleResolution": "node16",
+        "module": "node16",
+        "target": "es2022",
         "noImplicitAny": true,
         "sourceMap": true,
         "declaration": true,
@@ -12,15 +11,15 @@
         "emitDecoratorMetadata": true,
         "importHelpers": true,
         "lib": [
-            "es2015"
+            "es2022"
         ]
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-       
         "typings/global",
-        "typings/global.d.ts"
+        "typings/global.d.ts",
+        "src/**/*.spec.ts"
     ]
 }
