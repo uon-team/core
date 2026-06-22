@@ -258,6 +258,24 @@ class AppModule {}
 // Resolves as [PluginA, PluginB]
 ```
 
+#### Provider Helpers
+
+Two helpers build common provider shapes for an `InjectionToken`:
+
+```typescript
+import { ProvideInjectable, ProvideValue } from '@uon/core';
+
+@Module({
+  providers: [
+    // instantiate MyService (with DI) for the token, optionally multi
+    ProvideInjectable(SERVICE_TOKEN, MyService),
+    // bind a static value to the token
+    ProvideValue(CONFIG_TOKEN, { debug: true }),
+  ],
+})
+class AppModule {}
+```
+
 ---
 
 ### Injecting Dependencies
@@ -331,16 +349,28 @@ const service = await injector.getAsync(MyService);
 
 | Method | Description |
 |--------|-------------|
-| `get<T>(token)` | Synchronously resolve a dependency |
-| `getAsync<T>(token)` | Asynchronously resolve a dependency |
-| `instanciateAsync<T>(type)` | Instantiate a type with injected constructor args |
-| `invokeAsync<T>(fn, deps)` | Call a function with injected arguments |
+| `get<T>(token, defaultValue?)` | Synchronously resolve a dependency. Throws if unresolved and no `defaultValue` is given. |
+| `getAsync<T>(token, defaultValue?)` | Asynchronously resolve a dependency (awaits async factories/deps). Rejects if unresolved and no `defaultValue` is given. |
+| `instanciate<T>(type)` | Synchronously instantiate a type with injected constructor args. |
+| `instanciateAsync<T>(type)` | Instantiate a type with injected constructor args, awaiting async deps. |
+| `invokeAsync<T>(func)` | Call a function with injected arguments. Argument tokens are read from the function's emitted `design:paramtypes` (and `@Inject`/`@Optional`/`@Self`); there is no `deps` parameter. |
+
+> When a token cannot be resolved, `get`/`getAsync` throw/reject unless you pass a
+> `defaultValue`. Pass `null` (commonly via `@Optional()`) to opt out of throwing.
 
 Child injectors inherit from a parent and can override providers:
 
 ```typescript
 const child = Injector.Create([ChildService], parentInjector);
 ```
+
+**Additional injector exports:**
+
+- `Injector.NULL` / `NullInjector` — the terminal injector at the top of every chain; resolving a required token here throws (sync) or rejects (async).
+- `StaticInjector` — the concrete `Injector` returned by `Injector.Create`.
+- `THROW_IF_NOT_FOUND` — sentinel default-value meaning "throw if the token is unresolved".
+- `GetInjectionTokens(typeOrFn)` — extract the ordered constructor/function parameter tokens (merging `@Inject`/`@Optional`/`@Self`) as `DependencyRecord[]`.
+- `IsInjectable(type)` — `true` when a class is decorated with `@Injectable()`.
 
 ---
 
@@ -593,6 +623,18 @@ Create a global singleton by name. Subsequent calls with the same name return th
 import { MakeUnique } from '@uon/core';
 
 const registry = MakeUnique('MyRegistry', () => new Map<string, any>());
+```
+
+> `MakeUnique` stores its singleton on the global object (see `GLOBAL` below) under a
+> `Symbol.for(id)` key, so the instance is shared even across duplicate copies of a module.
+
+### GLOBAL
+
+A cross-environment reference to the global object (`globalThis` in modern runtimes,
+falling back to `self`/`global`). Used internally by `MakeUnique`.
+
+```typescript
+import { GLOBAL } from '@uon/core';
 ```
 
 ### TypeScript Helpers

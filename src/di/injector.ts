@@ -31,7 +31,7 @@ export class NullInjector implements Injector {
     async getAsync(token: any, defaultValue: any = THROW_IF_NOT_FOUND) {
 
         if (defaultValue === THROW_IF_NOT_FOUND) {
-            return new Error(`No provider for ${token}!`);
+            throw new Error(`No provider for ${token.name || token.toString()}!`);
         }
         return defaultValue;
 
@@ -160,8 +160,6 @@ export class StaticInjector implements Injector {
     }
 
     async instanciateAsync<T>(type: Type<T>): Promise<T> {
-
-        let p = Promise.resolve();
 
         let dep_records = GetInjectionTokens(type);
         let deps: any[] = [];

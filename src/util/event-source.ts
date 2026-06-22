@@ -52,26 +52,38 @@ export class EventSource {
      */
     once(type: string, func: EventHandler, priority: number = 100) {
 
-        let f = (...args: any[]) => {
-            func.apply(this, args);
-            this.removeListener(type, f);
+        const f = async (...args: any[]) => {
+            try {
+                // await so async handlers are fully resolved (and their
+                // rejection propagates) before the listener is removed
+                return await func.apply(this, args);
+            }
+            finally {
+                this.removeListener(type, f);
+            }
         };
+
+        // keep a reference to the original handler so the listener can still
+        // be removed via removeListener(type, originalFunc)
+        (f as any)._original = func;
+
         return this.on(type, f, priority);
     }
 
 
     /**
      * Remove an event listener
-     * @param type 
-     * @param func 
+     * @param type
+     * @param func
      */
     removeListener(type: string, func: EventHandler) {
         const list = this.__l[type];
         if (list) {
-            let obj: EventContainer = null;
             for (let i = 0, l = list.length; i < l; ++i) {
-                let o = list[i];
-                if (o.func === func) {
+                const o = list[i];
+                // match the listener directly, or the once() wrapper
+                // created for the provided original handler
+                if (o.func === func || (o.func as any)._original === func) {
                     list.splice(i, 1);
                     break;
                 }
@@ -102,8 +114,11 @@ export class EventSource {
             return;
         }
 
-        for (let i = 0, l = list.length; i < l; ++i) {
-            let e = list[i];
+        // iterate over a snapshot so listeners that remove themselves during
+        // emission (eg. once()) don't splice the array out from under the loop
+        const snapshot = list.slice();
+        for (let i = 0, l = snapshot.length; i < l; ++i) {
+            let e = snapshot[i];
             await e.func.apply(this, args);
         }
 

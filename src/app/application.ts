@@ -51,6 +51,12 @@ export class Application {
         // get providers form main module
         const mod: Module = GetTypeMetadata(this._main).find(m => m instanceof Module);
 
+        // fail with a descriptive error (instead of an opaque TypeError on
+        // mod.providers) when the startup module is missing its @Module()
+        if (!mod) {
+            throw new Error(`${(this._main as any).name || this._main} was not decorated with @Module()`);
+        }
+
         // finally load all modules
         this._rlm(this._main, this._i, mod.providers);
 

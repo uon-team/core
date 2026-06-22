@@ -65,8 +65,8 @@ describe('IsObject', () => {
         assert.equal(IsObject({}), true);
     });
 
-    test('returns true for null (typeof null === "object")', () => {
-        assert.equal(IsObject(null), true);
+    test('returns false for null', () => {
+        assert.equal(IsObject(null), false);
     });
 
     test('returns true for an array', () => {

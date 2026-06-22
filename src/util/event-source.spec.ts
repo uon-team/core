@@ -108,4 +108,74 @@ describe('EventSource', () => {
             assert.equal(count, 0);
         });
     });
+
+    describe('regression: emit / once interaction', () => {
+        // a once() listener removes itself mid-emit; emit must iterate a
+        // snapshot so the following listener is not skipped or read as undefined
+        test('emit does not crash and still calls the listener after a once()', async () => {
+            const es = new EventSource();
+            let onceCount = 0;
+            let afterCount = 0;
+            es.once('test', () => { onceCount++; });
+            es.on('test', () => { afterCount++; });
+
+            await assert.doesNotReject(es.emit('test'));
+            assert.equal(onceCount, 1);
+            assert.equal(afterCount, 1);
+        });
+
+        test('once() before two other listeners: all fire on first emit', async () => {
+            const es = new EventSource();
+            const order: string[] = [];
+            es.once('test', () => { order.push('once'); });
+            es.on('test', () => { order.push('a'); });
+            es.on('test', () => { order.push('b'); });
+
+            await es.emit('test');
+            assert.deepEqual(order, ['once', 'a', 'b']);
+
+            // once is gone on the second emit
+            await es.emit('test');
+            assert.deepEqual(order, ['once', 'a', 'b', 'a', 'b']);
+        });
+
+        test('once() awaits an async handler before emit resolves', async () => {
+            const es = new EventSource();
+            let done = false;
+            es.once('test', async () => {
+                await new Promise(r => setTimeout(r, 30));
+                done = true;
+            });
+            await es.emit('test');
+            assert.equal(done, true);
+        });
+
+        test('once() handler rejection propagates out of emit', async () => {
+            const es = new EventSource();
+            es.once('test', async () => { throw new Error('boom'); });
+            await assert.rejects(es.emit('test'), /boom/);
+        });
+
+        test('a once() listener can be removed via the original handler before it fires', async () => {
+            const es = new EventSource();
+            let count = 0;
+            const fn = () => { count++; };
+            es.once('test', fn);
+            es.removeListener('test', fn);
+            await es.emit('test');
+            assert.equal(count, 0);
+        });
+
+        test('emit iterates a snapshot: a listener added during emit is not called in the same emit', async () => {
+            const es = new EventSource();
+            let lateCalls = 0;
+            es.on('test', () => {
+                es.on('test', () => { lateCalls++; });
+            });
+            await es.emit('test');
+            assert.equal(lateCalls, 0);
+            await es.emit('test');
+            assert.equal(lateCalls, 1);
+        });
+    });
 });

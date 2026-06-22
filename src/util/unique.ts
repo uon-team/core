@@ -12,7 +12,9 @@ export function MakeUnique<T>(id: string, value: T): T {
 
     const symbol = Symbol.for(id);
 
-    if (!GLOBAL[symbol]) {
+    // use an explicit undefined check so falsy singletons (0, '', false)
+    // are not re-created/overwritten on subsequent calls
+    if (GLOBAL[symbol] === undefined) {
         GLOBAL[symbol] = value;
     }
 
