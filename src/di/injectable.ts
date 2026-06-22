@@ -31,7 +31,7 @@ export const Injectable: InjectableDecorator =
 	MakeTypeDecorator(
             'Injectable', // name
             (token: any) => ({ token }), // properties
-            null, // parent
+            undefined, // parent
             (cls: any, meta: any) => {
                 meta.token = GetMetadata('design:type', cls);
             }
@@ -83,7 +83,7 @@ export const Inject: InjectDecorator =
     MakeParameterDecorator(
             'Inject',
             (token: any) => ({ token }),
-            null,
+            undefined,
             (cls: any, meta: Inject, index: number) => {
                 if (!meta.token) {
                     meta.token = (GetMetadata('design:paramtypes', cls) as any[])[index];

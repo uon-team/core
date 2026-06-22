@@ -21,11 +21,11 @@ export function MakeTypeDecorator(
 
     const meta_ctor = CreateMetadataCtor(props);
 
-    function TypeDecoratorFactory(...args: any[]): TypeDecorator {
+    function TypeDecoratorFactory(this: any, ...args: any[]): TypeDecorator {
 
         if (this instanceof TypeDecoratorFactory) {
             meta_ctor.call(this, ...args);
-            return this;
+            return this as any;
         }
 
         const meta_instance = new (<any>TypeDecoratorFactory)(...args);

@@ -11,10 +11,10 @@ import { TypeDecorator, MakeTypeDecorator } from '../meta/type.decorator';
  */
 export class ModuleRef<T> {
 
-    module: Module;
-    type: Type<T>;
-    instance: T;
-    injector: Injector;
+    module!: Module;
+    type!: Type<T>;
+    instance?: T;
+    injector!: Injector;
 }
 
 

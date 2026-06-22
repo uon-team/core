@@ -31,7 +31,7 @@ export class NullInjector implements Injector {
     async getAsync(token: any, defaultValue: any = THROW_IF_NOT_FOUND) {
 
         if (defaultValue === THROW_IF_NOT_FOUND) {
-            return new Error(`No provider for ${token}!`);
+            throw new Error(`No provider for ${token.name || token.toString()}!`);
         }
         return defaultValue;
 
@@ -161,8 +161,6 @@ export class StaticInjector implements Injector {
 
     async instanciateAsync<T>(type: Type<T>): Promise<T> {
 
-        let p = Promise.resolve();
-
         let dep_records = GetInjectionTokens(type);
         let deps: any[] = [];
 
@@ -196,7 +194,7 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private resolveToken(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): any {
+    private resolveToken(token: any, record: InjectionRecord | undefined, defaultValue: any, selfOnly?: boolean): any {
 
         if (record) {
 
@@ -270,7 +268,7 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private async resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): Promise<any> {
+    private async resolveTokenAsync(token: any, record: InjectionRecord | undefined, defaultValue: any, selfOnly?: boolean): Promise<any> {
 
         if (record) {
 
@@ -436,7 +434,7 @@ export class StaticInjector implements Injector {
 
         let deps: DependencyRecord[] = [];
 
-        const provider_deps: any[] = (provider as FactoryProvider & ClassProvider).deps;
+        const provider_deps: any[] | undefined = (provider as FactoryProvider & ClassProvider).deps;
 
         if (IsFunction(provider)) {
 

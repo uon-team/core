@@ -29,7 +29,7 @@ export function IsFunction(v: any): v is Function {
  * @param v 
  */
 export function IsObject(v: any): v is Object {
-    return typeof v === 'object';
+    return v !== null && typeof v === 'object';
 }
 
 /**
