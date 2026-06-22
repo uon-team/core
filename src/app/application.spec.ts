@@ -69,7 +69,8 @@ describe('Application', () => {
         test('declaration points to the correct module ref', () => {
             const app = new Application(DeclModule);
             const ref = app.declarations.get(DeclA);
-            assert.equal(ref.type, DeclModule);
+            assert.ok(ref);
+            assert.equal(ref!.type, DeclModule);
         });
 
         test('throws when a declaration is redeclared in another module', () => {

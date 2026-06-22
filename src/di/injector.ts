@@ -194,7 +194,7 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private resolveToken(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): any {
+    private resolveToken(token: any, record: InjectionRecord | undefined, defaultValue: any, selfOnly?: boolean): any {
 
         if (record) {
 
@@ -268,7 +268,7 @@ export class StaticInjector implements Injector {
      * @param record 
      * @param defaultValue 
      */
-    private async resolveTokenAsync(token: any, record: InjectionRecord, defaultValue: any, selfOnly?: boolean): Promise<any> {
+    private async resolveTokenAsync(token: any, record: InjectionRecord | undefined, defaultValue: any, selfOnly?: boolean): Promise<any> {
 
         if (record) {
 
@@ -434,7 +434,7 @@ export class StaticInjector implements Injector {
 
         let deps: DependencyRecord[] = [];
 
-        const provider_deps: any[] = (provider as FactoryProvider & ClassProvider).deps;
+        const provider_deps: any[] | undefined = (provider as FactoryProvider & ClassProvider).deps;
 
         if (IsFunction(provider)) {
 

@@ -14,7 +14,7 @@ describe('EventSource', () => {
 
         test('passes arguments to listener', async () => {
             const es = new EventSource();
-            let received: any[];
+            let received: any[] | undefined;
             es.on('test', (...args) => { received = args; });
             await es.emit('test', 1, 'two', true);
             assert.deepEqual(received, [1, 'two', true]);

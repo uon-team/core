@@ -3,7 +3,7 @@ import { CreateMetadataCtor, GetOrDefineMetadata, META_PARAMETERS } from './meta
 
 
 export interface ParamDecorator {
-    (target: Object, propertyKey: string | symbol, parameterIndex: number): void;
+    (target: Object, propertyKey: string | symbol | undefined, parameterIndex: number): void;
 }
 
 
@@ -22,16 +22,16 @@ export function MakeParameterDecorator(
 
     const meta_ctor = CreateMetadataCtor(props);
 
-    function ParameterDecoratorFactory(...args: any[]): ParamDecorator {
+    function ParameterDecoratorFactory(this: any, ...args: any[]): ParamDecorator {
 
         if (this instanceof ParameterDecoratorFactory) {
             meta_ctor.call(this, ...args);
-            return this;
+            return this as any;
         }
 
         const meta_instance = new (<any>ParameterDecoratorFactory)(...args);
 
-        function ParamDecorator(cls: any, key: string | symbol, index: number) {
+        function ParamDecorator(cls: any, key: string | symbol | undefined, index: number) {
 
             fn && fn(cls, meta_instance, index);
 

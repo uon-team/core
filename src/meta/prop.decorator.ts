@@ -24,11 +24,11 @@ export function MakePropertyDecorator(
 
     const meta_ctor = CreateMetadataCtor(props);
 
-    function PropertyDecoratorFactory(...args: any[]): PropDecorator {
+    function PropertyDecoratorFactory(this: any, ...args: any[]): PropDecorator {
 
         if (this instanceof PropertyDecoratorFactory) {
             meta_ctor.call(this, ...args);
-            return this;
+            return this as any;
         }
 
         const meta_instance = new (<any>PropertyDecoratorFactory)(...args);

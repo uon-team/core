@@ -15,13 +15,13 @@ export const META_MODULE = "uon:module";
  * @param obj 
  * @param defaultValue 
  */
-export function GetOrDefineMetadata(metadataKey: string, obj: any, key: string | symbol = undefined, defaultValue: any = []): any {
+export function GetOrDefineMetadata(metadataKey: string, obj: any, key?: string | symbol, defaultValue: any = []): any {
 
     let annotation: any = GetOwnMetadata(metadataKey, obj, key);
 
     if (!annotation) {
         annotation = defaultValue;
-        Reflect.defineMetadata(metadataKey, annotation, obj, key);
+        Reflect.defineMetadata(metadataKey, annotation, obj, key as any);
     }
 
     return annotation;
@@ -35,11 +35,11 @@ export function GetOrDefineMetadata(metadataKey: string, obj: any, key: string |
  * @param obj 
  */
 export function GetMetadata(metadataKey: string, obj: any, key?: string | symbol) {
-    return Reflect.getMetadata(metadataKey, obj, key);
+    return Reflect.getMetadata(metadataKey, obj, key as any);
 }
 
 export function GetOwnMetadata(metadataKey: string, obj: any, key?: string | symbol) {
-    return Reflect.getOwnMetadata(metadataKey, obj, key);
+    return Reflect.getOwnMetadata(metadataKey, obj, key as any);
 }
 
 
@@ -85,7 +85,7 @@ export function GetParametersMetadata(type: Function, key?: string): any[] {
  * @param obj 
  * @param type 
  */
-export function FindMetadataOfType<T>(metadataKey: string, obj: any, type: Type<T>): T {
+export function FindMetadataOfType<T>(metadataKey: string, obj: any, type: Type<T>): T | null {
 
     const data = GetMetadata(metadataKey, obj) as any [];
 
@@ -109,7 +109,7 @@ export function FindMetadataOfType<T>(metadataKey: string, obj: any, type: Type<
  * @param properties A function that return a key-value map
  */
 export function CreateMetadataCtor(properties?: (...args: any[]) => any) {
-    return function ctor(...args: any[]) {
+    return function ctor(this: any, ...args: any[]) {
         if (properties) {
             const values = properties(...args);
             for (const name in values) {

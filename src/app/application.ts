@@ -49,7 +49,7 @@ export class Application {
         this._i = Injector.Create(providers);
 
         // get providers form main module
-        const mod: Module = GetTypeMetadata(this._main).find(m => m instanceof Module);
+        const mod = GetTypeMetadata(this._main).find(m => m instanceof Module);
 
         // fail with a descriptive error (instead of an opaque TypeError on
         // mod.providers) when the startup module is missing its @Module()
@@ -88,7 +88,7 @@ export class Application {
      */
     async start(): Promise<ModuleRef<any>> {
 
-        let main_ref: ModuleRef<any> = null;
+        let main_ref: ModuleRef<any> | null = null;
 
         // instantiate modules
         for (let i = 0; i < this._m.length; ++i) {
@@ -111,12 +111,14 @@ export class Application {
 
         }
 
+        if (!main_ref) {
+            throw new Error(`The main module ${(this._main as any).name || this._main} was not loaded`);
+        }
+
         // check for onStart() on main module
-        if (main_ref) {
-            const mainInstance = main_ref.instance;
-            if (mainInstance && typeof mainInstance.onStart === 'function') {
-                await mainInstance.onStart();
-            }
+        const mainInstance = main_ref.instance as any;
+        if (mainInstance && typeof mainInstance.onStart === 'function') {
+            await mainInstance.onStart();
         }
 
         return main_ref;
@@ -131,7 +133,7 @@ export class Application {
 
         // get module's metadata
         let module_type: Type<any> = (type as ModuleWithProviders).module || (type as Type<any>);
-        let mod: Module = GetTypeMetadata(module_type).find(m => m instanceof Module);
+        let mod = GetTypeMetadata(module_type).find(m => m instanceof Module);
 
 
         if (!mod) {
@@ -165,7 +167,11 @@ export class Application {
                 loaded_imports.push(module_type)
 
                 // get module metadata
-                let mod: Module = GetTypeMetadata(module_type).find(m => m instanceof Module);
+                let mod = GetTypeMetadata(module_type).find(m => m instanceof Module);
+
+                if (!mod) {
+                    throw new Error(`${module_type} was not decorated with @Module()`);
+                }
 
                 // get import providers
                 let extra_providers = (m as ModuleWithProviders).providers || [];

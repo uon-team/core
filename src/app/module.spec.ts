@@ -36,8 +36,9 @@ describe('Module decorator', () => {
         class M {}
 
         const meta = GetTypeMetadata(M).find(m => m instanceof Module);
-        assert.equal(meta.declarations[0], Dep);
-        assert.equal(meta.providers.length, 1);
+        assert.ok(meta);
+        assert.equal(meta!.declarations![0], Dep);
+        assert.equal(meta!.providers!.length, 1);
     });
 });
 

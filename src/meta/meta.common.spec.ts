@@ -120,7 +120,7 @@ describe('GetPropertiesMetadata / GetPropertiesOwnMetadata', () => {
 
 describe('FindMetadataOfType', () => {
     test('returns matching instance', () => {
-        class Tag { name: string; }
+        class Tag { name!: string; }
         const instance = Object.assign(new Tag(), { name: 'test' });
         const obj = {};
         Reflect.defineMetadata(META_ANNOTATIONS, [instance], obj);

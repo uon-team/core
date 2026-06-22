@@ -26,7 +26,7 @@ describe('MakePropertyDecorator', () => {
 
         class Target {
             @MyProp('myLabel')
-            myProp: string;
+            myProp!: string;
         }
 
         const props = GetPropertiesMetadata(Target.prototype);
@@ -41,7 +41,7 @@ describe('MakePropertyDecorator', () => {
         class Target {
             @DecB('b')
             @DecA('a')
-            myProp: string;
+            myProp!: string;
         }
 
         const props = GetPropertiesMetadata(Target.prototype);
@@ -53,10 +53,10 @@ describe('MakePropertyDecorator', () => {
 
         class Target {
             @MyProp(1)
-            first: string;
+            first!: string;
 
             @MyProp(2)
-            second: string;
+            second!: string;
         }
 
         const props = GetPropertiesMetadata(Target.prototype);
@@ -72,7 +72,7 @@ describe('MakePropertyDecorator', () => {
 
         class Target {
             @MyProp()
-            hookProp: string;
+            hookProp!: string;
         }
 
         assert.equal(hookKey, 'hookProp');
