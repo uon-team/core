@@ -1,9 +1,0 @@
-*.DS_Store
-*.project
-*.settings
-/docs
-/node_modules
-/typings
-/src
-*.log
-tsconfig.json
